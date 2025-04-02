@@ -11,6 +11,7 @@ body {
   }
 }
 
+/* Basic animations that work in all browsers */
 @keyframes twinkle {
   0% {
     opacity: 0.2;
@@ -27,73 +28,73 @@ body {
   animation: twinkle 3s ease-in-out infinite;
 }
 
-@keyframes fadeIn {
+/* Simple animations that will work in Chrome - slightly slower animations for splash screen */
+@keyframes simpleFall {
   0% {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fallIn {
-  0% {
-    opacity: 0;
     transform: translateY(-100px);
-  }
-  60% {
-    transform: translateY(20px);
-  }
-  80% {
-    transform: translateY(-10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fallFromTop {
-  0% {
     opacity: 0;
-    transform: translateY(-300px);
-  }
-  60% {
-    opacity: 1;
-    transform: translateY(20px);
-  }
-  80% {
-    transform: translateY(-10px);
   }
   100% {
-    opacity: 1;
     transform: translateY(0);
+    opacity: 1;
   }
 }
 
-@keyframes fallExit {
+@keyframes simpleExit {
   0% {
     transform: translateY(0);
     opacity: 1;
   }
   100% {
-    transform: translateY(300px);
+    transform: translateY(100px);
     opacity: 0;
   }
 }
 
-.animate-fall-in {
-  animation: fallIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+.fall-letter {
+  transform: translateY(-100px);
+  opacity: 0;
+  animation: simpleFall 0.8s forwards; /* Slowed from 0.5s to 0.8s */
 }
 
-.animate-fall-from-top {
-  animation: fallFromTop 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+.exit-animation {
+  animation: simpleExit 0.8s forwards; /* Slowed from 0.5s to 0.8s */
+  animation-fill-mode: forwards !important; /* Ensure animation end state is preserved */
 }
 
-.animate-fall-exit {
-  animation: fallExit 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+/* Keep the main site animation speed the same */
+.fall-animation {
+  transform: translateY(-50px);
+  opacity: 0;
+  animation: simpleFall 0.5s forwards;
+}
+
+/* Custom gradient text that works in Chrome */
+.chrome-gradient {
+  position: relative;
+  background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  
+  /* Remove text-shadow as it was causing blur */
+  /* Add fallback color that will show if gradient fails */
+  color: white;
+}
+
+/* Add some spacing between letters in the title */
+h1.chrome-gradient span {
+  margin: 0 0.02em;
+  
+  /* Important - ensure the gradient works properly by resetting styles on spans */
+  background: inherit;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  /* Ensure the letter is visible in all browsers */
+  color: white;
 }
 
 /* Staggered animation delays for multiple elements */
@@ -113,4 +114,91 @@ body {
   animation-delay: 0.4s;
 }
 
-/* Removing all other animation styles */
+/* Special hover effect for the first letter in Tinor */
+.group:hover {
+  -webkit-text-fill-color: white !important;
+  text-shadow: 0 0 8px rgba(59, 130, 246, 0.8);
+  transform: scale(1.1);
+}
+
+/* First animation: Fall from top */
+@keyframes fallFromTop {
+  0% {
+    transform: translateY(-120px);
+    opacity: 0;
+  }
+  70% {
+    transform: translateY(5px);
+    opacity: 1;
+  }
+  85% {
+    transform: translateY(-3px);
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Second animation: Fall down and exit */
+@keyframes fallDown {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(150px);
+    opacity: 0;
+  }
+}
+
+/* Third animation: Enhanced bouncy entrance for main screen */
+@keyframes bouncyEntrance {
+  0% {
+    transform: translateY(-70px);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(20px);
+    opacity: 1;
+  }
+  70% {
+    transform: translateY(-12px);
+  }
+  85% {
+    transform: translateY(5px);
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Animation classes */
+.fall-from-top {
+  position: relative;
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(-120px);
+  animation: fallFromTop 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation-delay: var(--delay, 0s); /* Use CSS variable for delay */
+  will-change: transform, opacity;
+}
+
+.fall-down {
+  position: relative;
+  display: inline-block;
+  animation: fallDown 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
+  animation-delay: var(--delay, 0s); /* Use CSS variable for delay */
+  will-change: transform, opacity;
+}
+
+.bouncy-entrance {
+  animation: bouncyEntrance 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.3) forwards;
+  animation-delay: var(--delay, 0s); /* Use CSS variable for delay */
+  transform: translateY(-70px);
+  opacity: 0;
+}

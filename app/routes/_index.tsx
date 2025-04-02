@@ -51,21 +51,31 @@ export default function Index() {
     setStars(generatedStars);
   }, []);
   
-  // Updated loading animation with two stages
+  // Updated loading animation sequence with reduced delay
   useEffect(() => {
-    // First stage: Enter the letters (1.5s)
-    const enterTimer = setTimeout(() => {
-      setSplashStage('exiting');
-    }, 1500);
+    // First we let the letters fall individually (allow more time for animation)
+    // Each letter takes 0.7s to fall, plus 0.15s delay between letters
+    // So for all 5 letters: ~1.5s
+    // Then we pause for ONLY 0.3s (reduced from 0.8s) to show the complete word
     
-    // Second stage: Exit the splash screen after another 1s (total 2.5s)
-    const exitTimer = setTimeout(() => {
+    const enterAndStayDuration = 1.5 + 0.3; // ~1.5s for all letters + 0.3s pause
+    
+    const startExitTimer = setTimeout(() => {
+      setSplashStage('exiting');
+    }, enterAndStayDuration * 1000);
+    
+    // Complete exit animation needs to account for all letters falling in sequence
+    // Last letter has a 0.4s delay (4 * 0.1s) and takes 0.3s to fall
+    // Buffer reduced from 0.2s to 0.1s
+    const exitDuration = (4 * 0.1) + 0.3 + 0.1; // Last letter delay + animation time + buffer (reduced)
+    
+    const completeExitTimer = setTimeout(() => {
       setIsLoading(false);
-    }, 2500);
+    }, (enterAndStayDuration + exitDuration) * 1000);
     
     return () => {
-      clearTimeout(enterTimer);
-      clearTimeout(exitTimer);
+      clearTimeout(startExitTimer);
+      clearTimeout(completeExitTimer);
     };
   }, []);
   
@@ -133,20 +143,37 @@ export default function Index() {
     return (
       <div className="min-h-screen bg-black relative overflow-hidden flex items-center justify-center">
         {stars}
-        <div className={`text-center z-10 ${splashStage === 'exiting' ? 'animate-fall-exit' : ''}`}>
-          <h1 className="text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
-            {Array.from("TINOR").map((letter, index) => (
-              <span 
-                key={index} 
-                className="inline-block animate-fall-from-top" 
-                style={{ 
-                  animationDelay: `${index * 0.2}s`,
-                  opacity: 0
-                }}
-              >
-                {letter}
-              </span>
-            ))}
+        <div className="text-center z-10">
+          <h1 className="text-7xl font-bold chrome-gradient relative">
+            {Array.from("TINOR").map((letter, index) => {
+              // Fix animation implementation to avoid style conflicts
+              let className = ""; 
+              let style = {};
+              
+              if (splashStage === 'entering') {
+                className = "fall-from-top";
+                // Use customStyle instead of direct animationDelay
+                style = { 
+                  '--delay': `${index * 0.15}s`,
+                } as React.CSSProperties;
+              } else {
+                className = "fall-down";
+                style = { 
+                  '--delay': `${index * 0.1}s`,
+                } as React.CSSProperties;
+              }
+              
+              return (
+                <span 
+                  key={index} 
+                  className={className}
+                  style={style}
+                  data-text={letter}
+                >
+                  {letter}
+                </span>
+              );
+            })}
           </h1>
           <div className="mt-4">
             <div className="w-16 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 mx-auto animate-pulse"></div>
@@ -171,16 +198,22 @@ export default function Index() {
       </button>
       
       <div className="container mx-auto px-4 py-16 flex flex-col items-center relative z-10">
-        {/* Fun animated header with falling effect - ONLY for the Tinor text */}
+        {/* Fun animated header with bouncy effect for the Tinor text */}
         <div className="mb-8 text-center">
-          <h1 className="text-6xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transition-all duration-300 hover:bg-gradient-to-r hover:from-pink-500 hover:via-purple-500 hover:to-blue-500 hover:scale-105 cursor-pointer">
+          <h1 className="text-6xl md:text-7xl font-bold chrome-gradient transition-all duration-300 hover:scale-105 cursor-pointer">
             {Array.from("Tinor").map((letter, index) => (
               <span 
                 key={index} 
-                className={`inline-block ${pageLoaded ? 'animate-fall-in' : 'opacity-0'} ${index === 0 ? 'hover:text-blue-300 relative' : ''}`}
+                className={`inline-block ${pageLoaded ? 'bouncy-entrance' : 'opacity-0'} ${
+                  index === 0 ? 'relative group' : ''
+                }`}
                 style={{ 
-                  animationDelay: `${index * 0.1}s` 
-                }}
+                  '--delay': `${index * 0.05}s`, // Use CSS variable
+                  ...(index === 0 ? {
+                    transition: 'all 0.3s ease',
+                  } : {})
+                } as React.CSSProperties}
+                data-text={letter}
                 onClick={index === 0 ? () => setShowDinoGame(true) : undefined}
                 onKeyDown={index === 0 ? (e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
@@ -193,11 +226,13 @@ export default function Index() {
               >
                 {letter}
                 {index === 0 && (
-                  <span className="absolute top-0 left-0 w-full h-full opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  <>
+                    {/* Easter egg hover effect for the T */}
+                    <span className="absolute inset-0 bg-gradient-to-r from-blue-400 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 rounded-md"></span>
+                    <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-20 pointer-events-none">
                       Click for a surprise!
                     </span>
-                  </span>
+                  </>
                 )}
               </span>
             ))}
