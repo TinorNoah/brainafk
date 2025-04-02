@@ -4,9 +4,25 @@
 
 html,
 body {
-  @apply bg-white dark:bg-gray-950;
+  @apply bg-black;
 
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;
   }
+}
+
+@keyframes twinkle {
+  0% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.2;
+  }
+}
+
+.animate-twinkle {
+  animation: twinkle 3s ease-in-out infinite;
 }
