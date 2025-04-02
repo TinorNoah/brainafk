@@ -26,3 +26,91 @@ body {
 .animate-twinkle {
   animation: twinkle 3s ease-in-out infinite;
 }
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fallIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-100px);
+  }
+  60% {
+    transform: translateY(20px);
+  }
+  80% {
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fallFromTop {
+  0% {
+    opacity: 0;
+    transform: translateY(-300px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(20px);
+  }
+  80% {
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fallExit {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(300px);
+    opacity: 0;
+  }
+}
+
+.animate-fall-in {
+  animation: fallIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.animate-fall-from-top {
+  animation: fallFromTop 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.animate-fall-exit {
+  animation: fallExit 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+/* Staggered animation delays for multiple elements */
+.delay-fall-1 {
+  animation-delay: 0.1s;
+}
+
+.delay-fall-2 {
+  animation-delay: 0.2s;
+}
+
+.delay-fall-3 {
+  animation-delay: 0.3s;
+}
+
+.delay-fall-4 {
+  animation-delay: 0.4s;
+}
+
+/* Removing all other animation styles */
