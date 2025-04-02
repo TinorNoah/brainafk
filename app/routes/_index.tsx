@@ -70,12 +70,43 @@ export default function Index() {
   };
   
   const socialLinks = [
-    { name: 'Discord', url: 'https://discord.gg/ukdfjvYsKa', icon: '👾', color: 'bg-indigo-500' },
-    { name: 'Instagram', url: 'https://www.instagram.com/tinor_noah/', icon: '📸', color: 'bg-pink-500' },
-    { name: 'YouTube', url: 'https://www.youtube.com/@tinornoah', icon: '🎬', color: 'bg-red-500' },
-    { name: 'Twitter', url: 'https://x.com/home', icon: '🐦', color: 'bg-blue-400' },
-    { name: 'Facebook', url: 'https://www.facebook.com/ronit.lohan.1', icon: '👍', color: 'bg-blue-600' },
-    { name: 'Reddit', url: 'https://www.reddit.com/user/TinorNoah/', icon: '🤖', color: 'bg-orange-500' },
+    { 
+      name: 'Discord', 
+      url: 'https://discord.gg/ukdfjvYsKa', 
+      icon: '/discord.svg', 
+      color: 'bg-[#5865F2]/10' 
+    },
+    { 
+      name: 'Instagram', 
+      url: 'https://www.instagram.com/tinor_noah/', 
+      icon: '/instagram.svg', 
+      color: 'bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-yellow-500/10' 
+    },
+    { 
+      name: 'YouTube', 
+      url: 'https://www.youtube.com/@tinornoah', 
+      icon: '/youtube.svg', 
+      color: 'bg-red-600/10' 
+    },
+    { 
+      name: 'X', 
+      url: 'https://x.com/home', 
+      icon: '/x.svg', 
+      color: 'bg-black border border-gray-700',
+      iconClass: 'filter invert brightness-0 invert' 
+    },
+    { 
+      name: 'Facebook', 
+      url: 'https://www.facebook.com/ronit.lohan.1', 
+      icon: '/facebook.svg', 
+      color: 'bg-[#1877F2]/10' 
+    },
+    { 
+      name: 'Reddit', 
+      url: 'https://www.reddit.com/user/TinorNoah/', 
+      icon: '/reddit.svg', 
+      color: 'bg-orange-600/10' 
+    },
   ];
 
   if (isLoading) {
@@ -121,9 +152,9 @@ export default function Index() {
       </button>
       
       <div className="container mx-auto px-4 py-16 flex flex-col items-center relative z-10">
-        {/* Fun animated header */}
+        {/* Fun animated header with hover effect */}
         <div className="mb-8 text-center">
-          <h1 className="text-6xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-pulse">
+          <h1 className="text-6xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transition-all duration-300 hover:bg-gradient-to-r hover:from-pink-500 hover:via-purple-500 hover:to-blue-500 hover:scale-105 cursor-pointer">
             Tinor
           </h1>
           <div className="mt-2 text-2xl font-medium text-gray-300">
@@ -148,13 +179,21 @@ export default function Index() {
               target="_blank"
               rel="noopener noreferrer"
               className={`${link.color} ${hoverIcon === link.name ? 'scale-105' : ''} 
-                p-5 rounded-lg shadow-lg flex flex-col items-center justify-center 
+                p-5 rounded-lg shadow-lg relative overflow-hidden
                 text-white transition-all duration-300 hover:shadow-xl`}
               onMouseEnter={() => setHoverIcon(link.name)}
               onMouseLeave={() => setHoverIcon(null)}
             >
-              <span className="text-4xl mb-2">{link.icon}</span>
-              <span className="font-medium">{link.name}</span>
+              <div className="flex flex-col items-center justify-center">
+                <div className="w-full flex justify-start mb-2">
+                  <img 
+                    src={link.icon} 
+                    alt={`${link.name} logo`} 
+                    className={`w-8 h-8 rotate-[-5deg] transform-gpu ${link.iconClass || ''}`}
+                  />
+                </div>
+                <span className="font-medium">{link.name}</span>
+              </div>
             </a>
           ))}
         </div>
