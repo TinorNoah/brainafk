@@ -1,5 +1,5 @@
 import type { MetaFunction } from "@remix-run/node";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -23,6 +23,9 @@ const Star = ({ size, top, left, delay }: { size: number, top: string, left: str
   />
 );
 
+// Lazy load the DinoGame component to reduce initial load time
+const DinoGame = lazy(() => import('~/components/DinoGame'));
+
 export default function Index() {
   const [colorMode, setColorMode] = useState<'light' | 'dark'>('dark');
   const [hoverIcon, setHoverIcon] = useState<string | null>(null);
@@ -30,6 +33,7 @@ export default function Index() {
   const [stars, setStars] = useState<React.ReactNode[]>([]);
   const [pageLoaded, setPageLoaded] = useState(false);
   const [splashStage, setSplashStage] = useState<'entering' | 'exiting'>("entering");
+  const [showDinoGame, setShowDinoGame] = useState(false);
   
   // Generate stars for background
   useEffect(() => {
@@ -173,12 +177,28 @@ export default function Index() {
             {Array.from("Tinor").map((letter, index) => (
               <span 
                 key={index} 
-                className={`inline-block ${pageLoaded ? 'animate-fall-in' : 'opacity-0'}`}
+                className={`inline-block ${pageLoaded ? 'animate-fall-in' : 'opacity-0'} ${index === 0 ? 'hover:text-blue-300 relative' : ''}`}
                 style={{ 
                   animationDelay: `${index * 0.1}s` 
                 }}
+                onClick={index === 0 ? () => setShowDinoGame(true) : undefined}
+                onKeyDown={index === 0 ? (e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    setShowDinoGame(true);
+                  }
+                } : undefined}
+                tabIndex={index === 0 ? 0 : undefined}
+                role={index === 0 ? "button" : undefined}
+                aria-label={index === 0 ? "Play Dino Game" : undefined}
               >
                 {letter}
+                {index === 0 && (
+                  <span className="absolute top-0 left-0 w-full h-full opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                      Click for a surprise!
+                    </span>
+                  </span>
+                )}
               </span>
             ))}
           </h1>
@@ -186,6 +206,13 @@ export default function Index() {
             Welcome to my digital playground!
           </div>
         </div>
+        
+        {/* Dino Game Modal */}
+        {showDinoGame && (
+          <Suspense fallback={<div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">Loading game...</div>}>
+            <DinoGame onClose={() => setShowDinoGame(false)} />
+          </Suspense>
+        )}
         
         {/* Brief intro - removed animation */}
         <div className="max-w-2xl text-center mb-12 p-6 bg-gray-900/70 rounded-lg shadow-xl backdrop-blur-sm">
