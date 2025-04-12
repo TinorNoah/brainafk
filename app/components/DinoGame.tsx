@@ -47,6 +47,21 @@ const DinoGame: React.FC<DinoGameProps> = ({ onClose }) => {
   // Handle Canvas2DGame active state
   const isGameActive = gameState === 'ready' || gameState === 'playing' || gameState === 'over';
 
+  // Handle escape key for closing the game
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only close with Escape if we're in the menu or if we pressed Escape twice
+      if (e.code === 'Escape' && isMenu) {
+        onClose();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose, isMenu]);
+
   return (
     <GameUI 
       onClose={onClose} 

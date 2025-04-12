@@ -47,17 +47,18 @@ const GameUI: React.FC<GameUIProps> = ({ onClose, isStarted, isGameOver, isReady
           {children}
         </div>
         
-        {/* Game instructions - shown during ready, playing and game over states */}
+        {/* Game instructions - Update pause instruction */}
         {(isReady || isStarted || isGameOver) && (
-          <div className="absolute bottom-4 left-0 right-0 text-center">
+          <div className="absolute bottom-4 left-0 right-0 text-center pointer-events-none">
             <div className="bg-gray-800 text-white py-2 px-4 inline-block pixel-box">
               <span className="pixel-text-sm">
                 {isReady ? (
-                  "PRESS SPACE OR CLICK TO START"
+                  "PRESS SPACE/ENTER/CLICK TO START"
                 ) : isGameOver ? (
-                  "GAME OVER! PRESS SPACE OR CLICK TO PLAY AGAIN"
+                  "GAME OVER! PRESS SPACE/ENTER/CLICK TO PLAY AGAIN"
                 ) : (
-                  "PRESS SPACE OR TAP TO JUMP"
+                  // Updated instruction for pause/resume
+                  "PRESS SPACE/CLICK TO JUMP • ESC TO PAUSE"
                 )}
               </span>
             </div>
