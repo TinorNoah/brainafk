@@ -9,8 +9,8 @@ import {
 } from "@remix-run/react";
 import { useEffect } from "react";
 
-// Import the CSS file properly without using a default export
-import tailwindStylesUrl from "./tailwind.css?url";
+// Import the CSS file from our new styles folder
+import tailwindStylesUrl from "./styles/tailwind.css?url";
 
 // Define a function to get the CSS bundle href
 const getCssBundleHref = (): string | undefined => {
@@ -30,27 +30,6 @@ export const links: LinksFunction = () => [
 
 export default function App() {
   const location = useLocation();
-
-  // Add global error handling for WebSocket connections
-  useEffect(() => {
-    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      // Prevent WebSocket connection errors from crashing the app
-      if (event.reason && 
-          (String(event.reason).includes('WebSocket') || 
-           String(event.reason).includes('socket'))) {
-        
-        // Prevent the error from bubbling up
-        event.preventDefault();
-        console.warn("WebSocket connection issue - handled gracefully:", event.reason);
-      }
-    };
-
-    window.addEventListener('unhandledrejection', handleUnhandledRejection);
-    
-    return () => {
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
-    };
-  }, []);
 
   // Reset scroll position on navigation
   useEffect(() => {

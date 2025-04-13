@@ -1,5 +1,8 @@
 import type { MetaFunction } from "@remix-run/node";
 import { useState, useEffect, lazy, Suspense } from "react";
+import Star from "~/components/ui/Star";
+import SplashScreen from "~/features/splash-screen/SplashScreen";
+import { useColorScheme } from "~/hooks/useColorScheme";
 
 export const meta: MetaFunction = () => {
   return [
@@ -8,31 +11,17 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-// Star component for the twinkling background
-const Star = ({ size, top, left, delay }: { size: number, top: string, left: string, delay: string }) => (
-  <div 
-    className="absolute rounded-full bg-white animate-twinkle"
-    style={{ 
-      width: `${size}px`, 
-      height: `${size}px`, 
-      top, 
-      left, 
-      animationDelay: delay,
-      opacity: Math.random() * 0.7 + 0.3
-    }}
-  />
-);
-
-// Lazy load the DinoGame component to reduce initial load time
-const DinoGame = lazy(() => import('~/components/DinoGame'));
+// Lazy load the DinoGame component using our refactored component
+const DinoGame = lazy(() => import('~/features/dino-game/DinoGameContainer'));
 
 export default function Index() {
-  const [colorMode, setColorMode] = useState<'light' | 'dark'>('dark');
+  // Use our custom hook for color scheme management
+  const { colorMode, toggleColorMode } = useColorScheme();
+  
   const [hoverIcon, setHoverIcon] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [stars, setStars] = useState<React.ReactNode[]>([]);
   const [pageLoaded, setPageLoaded] = useState(false);
-  const [splashStage, setSplashStage] = useState<'entering' | 'exiting'>("entering");
   const [showDinoGame, setShowDinoGame] = useState(false);
   
   // Generate stars for background
@@ -51,53 +40,10 @@ export default function Index() {
     setStars(generatedStars);
   }, []);
   
-  // Updated loading animation sequence with reduced delay
-  useEffect(() => {
-    // First we let the letters fall individually (allow more time for animation)
-    // Each letter takes 0.7s to fall, plus 0.15s delay between letters
-    // So for all 5 letters: ~1.5s
-    // Then we pause for ONLY 0.3s (reduced from 0.8s) to show the complete word
-    
-    const enterAndStayDuration = 1.5 + 0.3; // ~1.5s for all letters + 0.3s pause
-    
-    const startExitTimer = setTimeout(() => {
-      setSplashStage('exiting');
-    }, enterAndStayDuration * 1000);
-    
-    // Complete exit animation needs to account for all letters falling in sequence
-    // Last letter has a 0.4s delay (4 * 0.1s) and takes 0.3s to fall
-    // Buffer reduced from 0.2s to 0.1s
-    const exitDuration = (4 * 0.1) + 0.3 + 0.1; // Last letter delay + animation time + buffer (reduced)
-    
-    const completeExitTimer = setTimeout(() => {
-      setIsLoading(false);
-    }, (enterAndStayDuration + exitDuration) * 1000);
-    
-    return () => {
-      clearTimeout(startExitTimer);
-      clearTimeout(completeExitTimer);
-    };
-  }, []);
-  
-  // Listen for changes in color scheme preference
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleChange = (e: MediaQueryListEvent) => {
-      setColorMode(e.matches ? 'dark' : 'light');
-    };
-    
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
-  }, []);
-  
   // Set pageLoaded after initial render
   useEffect(() => {
     setPageLoaded(true);
   }, []);
-  
-  const toggleColorMode = () => {
-    setColorMode(prev => prev === 'light' ? 'dark' : 'light');
-  };
   
   const socialLinks = [
     { 
@@ -140,47 +86,7 @@ export default function Index() {
   ];
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-black relative overflow-hidden flex items-center justify-center">
-        {stars}
-        <div className="text-center z-10">
-          <h1 className="text-7xl font-bold chrome-gradient relative">
-            {Array.from("TINOR").map((letter, index) => {
-              // Fix animation implementation to avoid style conflicts
-              let className = ""; 
-              let style = {};
-              
-              if (splashStage === 'entering') {
-                className = "fall-from-top";
-                // Use customStyle instead of direct animationDelay
-                style = { 
-                  '--delay': `${index * 0.15}s`,
-                } as React.CSSProperties;
-              } else {
-                className = "fall-down";
-                style = { 
-                  '--delay': `${index * 0.1}s`,
-                } as React.CSSProperties;
-              }
-              
-              return (
-                <span 
-                  key={index} 
-                  className={className}
-                  style={style}
-                  data-text={letter}
-                >
-                  {letter}
-                </span>
-              );
-            })}
-          </h1>
-          <div className="mt-4">
-            <div className="w-16 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 mx-auto animate-pulse"></div>
-          </div>
-        </div>
-      </div>
-    );
+    return <SplashScreen onComplete={() => setIsLoading(false)} />;
   }
 
   return (
@@ -249,7 +155,7 @@ export default function Index() {
           </Suspense>
         )}
         
-        {/* Brief intro - removed animation */}
+        {/* Brief intro */}
         <div className="max-w-2xl text-center mb-12 p-6 bg-gray-900/70 rounded-lg shadow-xl backdrop-blur-sm">
           <p className="text-xl text-gray-300">
             Hey there! I&apos;m passionate about creating fun and interactive experiences on the web.

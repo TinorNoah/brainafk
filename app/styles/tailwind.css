@@ -1,0 +1,49 @@
+@import './animations.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  @apply bg-black;
+
+  @media (prefers-color-scheme: dark) {
+    color-scheme: dark;
+  }
+}
+
+/* Custom gradient text that works in Chrome */
+.chrome-gradient {
+  position: relative;
+  background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  
+  /* Remove text-shadow as it was causing blur */
+  /* Add fallback color that will show if gradient fails */
+  color: white;
+}
+
+/* Add some spacing between letters in the title */
+h1.chrome-gradient span {
+  margin: 0 0.02em;
+  
+  /* Important - ensure the gradient works properly by resetting styles on spans */
+  background: inherit;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  /* Ensure the letter is visible in all browsers */
+  color: white;
+}
+
+/* Special hover effect for the first letter in Tinor */
+.group:hover {
+  -webkit-text-fill-color: white !important;
+  text-shadow: 0 0 8px rgba(59, 130, 246, 0.8);
+  transform: scale(1.1);
+}
