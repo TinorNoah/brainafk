@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { parseCsv } from "../../ai-pricing-chart/lib/csv-parser";
+import { parseCsv } from "../lib/csv-parser";
 import {
   BarChart,
   Bar,
