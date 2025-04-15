@@ -1,4 +1,5 @@
 import { GameEngineState } from '../types';
+import { DINO_CHARACTERS, DINO_SPRITE_SHEET, CACTUS_SPRITE_SHEET } from '../config/constants';
 
 interface RenderingSprites {
   dinoRun1?: HTMLImageElement;
@@ -7,12 +8,93 @@ interface RenderingSprites {
   obstacleSmall?: HTMLImageElement;
   obstacleLarge?: HTMLImageElement;
   cloud?: HTMLImageElement;
+  // New sprite sheets
+  dinoSheetDoux?: HTMLImageElement;
+  dinoSheetMort?: HTMLImageElement;
+  dinoSheetTard?: HTMLImageElement;
+  dinoSheetVita?: HTMLImageElement;
+  // Cactus sprite sheet
+  cactusSheet?: HTMLImageElement;
 }
 
 // --- Main Drawing Function ---
 
 // Track last status for logging changes
 let lastStatus = '';
+
+// Helper function to get the appropriate sprite sheet based on character
+function getDinoSpriteSheet(character: string, sprites: RenderingSprites): HTMLImageElement | undefined {
+  switch (character) {
+    case DINO_CHARACTERS.DOUX:
+      return sprites.dinoSheetDoux;
+    case DINO_CHARACTERS.MORT:
+      return sprites.dinoSheetMort;
+    case DINO_CHARACTERS.TARD:
+      return sprites.dinoSheetTard;
+    case DINO_CHARACTERS.VITA:
+      return sprites.dinoSheetVita;
+    default:
+      return sprites.dinoSheetDoux;
+  }
+}
+
+// Helper function to draw a sprite from a sprite sheet
+function drawSpriteFromSheet(
+  ctx: CanvasRenderingContext2D,
+  spriteSheet: HTMLImageElement,
+  frameIndex: number,
+  x: number,
+  y: number,
+  width: number,
+  height: number
+): void {
+  // Calculate the position of the frame in the sprite sheet
+  const srcX = (frameIndex % 24) * DINO_SPRITE_SHEET.WIDTH;
+  const srcY = 0;
+  
+  ctx.drawImage(
+    spriteSheet,
+    srcX,
+    srcY,
+    DINO_SPRITE_SHEET.WIDTH,
+    DINO_SPRITE_SHEET.HEIGHT,
+    x,
+    y,
+    width,
+    height
+  );
+}
+
+// Helper function to draw a cactus from the sprite sheet
+function drawCactusFromSheet(
+  ctx: CanvasRenderingContext2D,
+  cactusSheet: HTMLImageElement,
+  cactusType: number,
+  x: number,
+  y: number,
+  width: number,
+  height: number
+): void {
+  // Calculate the position of the cactus in the sprite sheet
+  // Each cactus is 32x32 pixels in the sprite sheet
+  const srcX = cactusType * CACTUS_SPRITE_SHEET.WIDTH;
+  const srcY = 0;
+  
+  // Debug info
+  console.log(`Drawing cactus type ${cactusType} from position ${srcX},${srcY}`);
+  
+  ctx.drawImage(
+    cactusSheet,
+    srcX,
+    srcY,
+    CACTUS_SPRITE_SHEET.WIDTH,
+    CACTUS_SPRITE_SHEET.HEIGHT,
+    x,
+    y,
+    width,
+    height
+  );
+}
 
 export function drawGame(
   ctx: CanvasRenderingContext2D,
@@ -55,49 +137,110 @@ export function drawGame(
   ctx.lineTo(scaledWidth, state.groundY);
   ctx.stroke();
 
-  // Draw dino
-  const dinoSprite = state.dino.isJumping
-    ? sprites.dinoJump
-    : state.dino.runFrame === 1
-    ? sprites.dinoRun1
-    : sprites.dinoRun2;
-
-  if (dinoSprite) {
-    ctx.drawImage(
-      dinoSprite,
+  // Draw dino based on character type
+  const spriteSheet = getDinoSpriteSheet(state.dino.character, sprites);
+  
+  if (spriteSheet) {
+    // Use sprite sheet if available
+    let frameIndex;
+    if (state.dino.isJumping) {
+      frameIndex = DINO_SPRITE_SHEET.JUMP_FRAME;
+    } else if (state.dino.crouching) {
+      frameIndex = state.dino.runFrame === 1 
+        ? DINO_SPRITE_SHEET.CROUCH_FRAMES[0] 
+        : DINO_SPRITE_SHEET.CROUCH_FRAMES[1];
+    } else {
+      frameIndex = state.dino.runFrame === 1 
+        ? DINO_SPRITE_SHEET.RUN_FRAMES[0] 
+        : DINO_SPRITE_SHEET.RUN_FRAMES[1];
+    }
+    
+    drawSpriteFromSheet(
+      ctx,
+      spriteSheet,
+      frameIndex,
       state.dino.x,
       state.dino.y,
       state.dino.width,
       state.dino.height
     );
   } else {
-    // Fallback rectangle if sprite not loaded
-    ctx.fillStyle = '#535353';
-    ctx.fillRect(
-      state.dino.x,
-      state.dino.y,
-      state.dino.width,
-      state.dino.height
-    );
+    // Fallback to original sprites if sheet not loaded
+    const dinoSprite = state.dino.isJumping
+      ? sprites.dinoJump
+      : state.dino.runFrame === 1
+      ? sprites.dinoRun1
+      : sprites.dinoRun2;
+
+    if (dinoSprite) {
+      ctx.drawImage(
+        dinoSprite,
+        state.dino.x,
+        state.dino.y,
+        state.dino.width,
+        state.dino.height
+      );
+    } else {
+      // Fallback rectangle if sprite not loaded
+      ctx.fillStyle = '#535353';
+      ctx.fillRect(
+        state.dino.x,
+        state.dino.y,
+        state.dino.width,
+        state.dino.height
+      );
+    }
   }
 
   // Draw obstacles
   for (const obstacle of state.obstacles) {
-    const obstacleSprite =
-      obstacle.type === 'large' ? sprites.obstacleLarge : sprites.obstacleSmall;
-
-    if (obstacleSprite) {
-      ctx.drawImage(
-        obstacleSprite,
+    // Use cactus sprite sheet if available
+    if (sprites.cactusSheet && obstacle.cactusType !== undefined) {
+      drawCactusFromSheet(
+        ctx,
+        sprites.cactusSheet,
+        obstacle.cactusType,
         obstacle.x,
         obstacle.y,
         obstacle.width,
         obstacle.height
       );
+    } 
+    // Fallback to individual sprites if cactus sheet is not available
+    else {
+      const obstacleSprite =
+        obstacle.type === 'large' ? sprites.obstacleLarge : sprites.obstacleSmall;
+
+      if (obstacleSprite) {
+        ctx.drawImage(
+          obstacleSprite,
+          obstacle.x,
+          obstacle.y,
+          obstacle.width,
+          obstacle.height
+        );
+      } else {
+        // Fallback rectangle if no sprite is loaded
+        ctx.fillStyle = '#535353';
+        ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+      }
+    }
+  }
+
+  // Draw clouds
+  for (const cloud of state.clouds) {
+    if (sprites.cloud) {
+      ctx.drawImage(
+        sprites.cloud,
+        cloud.x,
+        cloud.y,
+        cloud.width,
+        cloud.height
+      );
     } else {
-      // Fallback rectangle if sprite not loaded
-      ctx.fillStyle = '#535353';
-      ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+      // Fallback for cloud
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.fillRect(cloud.x, cloud.y, cloud.width, cloud.height);
     }
   }
 

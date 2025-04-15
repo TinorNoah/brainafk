@@ -25,6 +25,41 @@ export const DINO_INITIAL_X = 80;
 export const DINO_WIDTH = 60;
 export const DINO_HEIGHT = 64;
 
+// Dino characters 
+export const DINO_CHARACTERS = {
+  DOUX: 'doux',
+  MORT: 'mort',
+  TARD: 'tard',
+  VITA: 'vita'
+} as const;
+
+export type DinoCharacterType = (typeof DINO_CHARACTERS)[keyof typeof DINO_CHARACTERS];
+
+// Dino sprite sheet properties (for sheet-based animations)
+export const DINO_SPRITE_SHEET = {
+  WIDTH: 24,   // Width of single frame in sprite sheet
+  HEIGHT: 24,  // Height of single frame
+  RUN_FRAMES: [4, 5], // Frame indices for running animation
+  JUMP_FRAME: 3,      // Frame index for jump animation
+  CROUCH_FRAMES: [6, 7], // Frame indices for crouching animation
+  TOTAL_FRAMES: 24    // Total frames in the sprite sheet
+};
+
+// Cactus sprite sheet properties
+export const CACTUS_SPRITE_SHEET = {
+  WIDTH: 96,   // Width of single cactus frame in sprite sheet (576px total width / 6 frames = 96px per frame)
+  HEIGHT: 128,  // Height of single cactus frame from the actual image
+  TOTAL_FRAMES: 6,    // Total different cactus types in sheet
+  TYPES: {
+    SMALL_SINGLE: 0,  // Small single cactus
+    SMALL_DOUBLE: 1,  // Two small cacti together
+    SMALL_TRIPLE: 2,  // Three small cacti together
+    LARGE_SINGLE: 3,  // Large single cactus
+    LARGE_DOUBLE: 4,  // Two large cacti together
+    MIXED: 5,         // Mix of large and small cacti
+  }
+};
+
 // Collision detection adjustments
 export const DINO_HITBOX_INSET_X = 10;
 export const DINO_HITBOX_INSET_WIDTH = 20;
@@ -71,17 +106,27 @@ export const OBSTACLE_PATTERNS = [
 
 // Sprite paths
 export const SPRITE_PATHS = {
-  dinoRun1: '/game/dino-run-0.png',
-  dinoRun2: '/game/dino-run-1.png',
-  dinoJump: '/game/dino-jump.png',
-  obstacleSmall: '/game/cactus-small.png',
-  obstacleLarge: '/game/cactus-large.png',
-  cloud: '/game/cloud.png',
+  // Original sprites
+  dinoRun1: '/game/sprites/dinoRun1.png',
+  dinoRun2: '/game/sprites/dinoRun2.png',
+  dinoJump: '/game/sprites/dinoJump.png',
+  obstacleSmall: '/game/sprites/obstacleSmall.png', 
+  obstacleLarge: '/game/sprites/obstacleLarge.png',
+  cloud: '/game/sprites/cloud.png',
+  
+  // New character sprite sheets
+  dinoSheetDoux: '/game/sprites/dino-characters/DinoSprites - doux.png',
+  dinoSheetMort: '/game/sprites/dino-characters/DinoSprites - mort.png', 
+  dinoSheetTard: '/game/sprites/dino-characters/DinoSprites - tard.png',
+  dinoSheetVita: '/game/sprites/dino-characters/DinoSprites - vita.png',
+  
+  // Cactus sprite sheet
+  cactusSheet: '/game/sprites/Cactus_Sprite_Sheet.png'
 };
 
 // Sound paths
 export const SOUND_PATHS = {
-  jump: '/game/jump.mp3',
-  die: '/game/die.mp3',
-  milestone: '/game/point.mp3',
+  jump: '/game/sounds/jump.wav',
+  die: '/game/sounds/die.wav',
+  milestone: '/game/sounds/point.wav',
 };

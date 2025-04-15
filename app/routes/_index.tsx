@@ -103,6 +103,16 @@ export default function Index() {
         {colorMode === 'light' ? '🌙' : '☀️'}
       </button>
       
+      {/* Bargraph Page Button (top right) */}
+      <div className="fixed top-4 right-4 z-20">
+        <a
+          href="/bargraph"
+          className="inline-block px-6 py-3 bg-gradient-to-r from-green-500 to-blue-600 text-white font-medium rounded-full shadow-lg hover:shadow-green-500/20 hover:shadow-xl transition-all duration-300 border border-green-400/30 text-base"
+        >
+          📊 View AI Pricing Bargraph
+        </a>
+      </div>
+
       <div className="container mx-auto px-4 py-16 flex flex-col items-center relative z-10">
         {/* Fun animated header with bouncy effect for the Tinor text */}
         <div className="mb-8 text-center">

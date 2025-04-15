@@ -1,8 +1,11 @@
+import { DinoCharacterType } from '../config/constants';
+
 // --- Component Props ---
 export interface GameCanvasProps {
   isActive: boolean;
   onGameOver: (score: number) => void;
   onScoreUpdate: (score: number) => void;
+  selectedCharacter?: DinoCharacterType;
 }
 
 export interface GameUIProps {
@@ -16,6 +19,8 @@ export interface GameUIProps {
 export interface MainMenuProps {
   onStartGame: () => void;
   highScore: number;
+  onCharacterSelect: (character: DinoCharacterType) => void;
+  selectedCharacter: DinoCharacterType;
 }
 
 // --- Game Engine Types ---
@@ -26,6 +31,11 @@ export interface Sprites {
   obstacleSmall?: HTMLImageElement;
   obstacleLarge?: HTMLImageElement;
   cloud?: HTMLImageElement;
+  // New sprite sheets
+  dinoSheetDoux?: HTMLImageElement;
+  dinoSheetMort?: HTMLImageElement;
+  dinoSheetTard?: HTMLImageElement;
+  dinoSheetVita?: HTMLImageElement;
 }
 
 export interface DinoState {
@@ -37,6 +47,8 @@ export interface DinoState {
   isJumping: boolean;
   runFrame: number;
   frameTime: number;
+  character: DinoCharacterType;
+  crouching: boolean;
 }
 
 export interface ObstacleState {
@@ -45,6 +57,7 @@ export interface ObstacleState {
   width: number;
   height: number;
   type: 'small' | 'large';
+  cactusType?: number; // Index into the cactus sprite sheet
 }
 
 export interface CloudState {

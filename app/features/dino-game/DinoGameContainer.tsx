@@ -3,6 +3,7 @@ import GameCanvas from './components/GameCanvas';
 import GameUI from './components/GameUI';
 import MainMenu from './components/MainMenu';
 import { preloadSounds } from './utils';
+import { DINO_CHARACTERS, DinoCharacterType } from './config/constants';
 
 interface DinoGameContainerProps {
   onClose: () => void;
@@ -15,6 +16,7 @@ const DinoGameContainer: React.FC<DinoGameContainerProps> = ({ onClose }) => {
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [selectedCharacter, setSelectedCharacter] = useState<DinoCharacterType>(DINO_CHARACTERS.DOUX); // Default character
   const gameContainerRef = useRef<HTMLDivElement>(null);
 
   // Load high score on mount
@@ -23,6 +25,13 @@ const DinoGameContainer: React.FC<DinoGameContainerProps> = ({ onClose }) => {
     if (savedHighScore) {
       setHighScore(parseInt(savedHighScore, 10));
     }
+    
+    // Load selected character from localStorage if available
+    const savedCharacter = localStorage.getItem('dinoGameCharacter') as DinoCharacterType | null;
+    if (savedCharacter && Object.values(DINO_CHARACTERS).includes(savedCharacter)) {
+      setSelectedCharacter(savedCharacter as DinoCharacterType);
+    }
+    
     // Preload game sounds
     preloadSounds();
   }, []);
@@ -51,6 +60,11 @@ const DinoGameContainer: React.FC<DinoGameContainerProps> = ({ onClose }) => {
       onClose();
     }, 300);
   };
+  
+  const handleCharacterSelect = (character: DinoCharacterType) => {
+    setSelectedCharacter(character);
+    localStorage.setItem('dinoGameCharacter', character);
+  };
 
   const isPlaying = gameState === 'playing';
   const isGameOver = gameState === 'over';
@@ -63,7 +77,12 @@ const DinoGameContainer: React.FC<DinoGameContainerProps> = ({ onClose }) => {
       isReady={gameState === 'menu'}
     >
       {gameState === 'menu' ? (
-        <MainMenu onStartGame={handleStartGame} highScore={highScore} />
+        <MainMenu 
+          onStartGame={handleStartGame} 
+          highScore={highScore} 
+          onCharacterSelect={handleCharacterSelect}
+          selectedCharacter={selectedCharacter}
+        />
       ) : (
         <div 
           ref={gameContainerRef}
@@ -84,6 +103,7 @@ const DinoGameContainer: React.FC<DinoGameContainerProps> = ({ onClose }) => {
             isActive={Boolean(gameState === 'playing' || gameState === 'over')}
             onGameOver={handleGameOver}
             onScoreUpdate={setScore}
+            selectedCharacter={selectedCharacter}
           />
         </div>
       )}

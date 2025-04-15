@@ -6,9 +6,7 @@ import {
   DINO_WIDTH,
   DINO_HEIGHT,
   GROUND_Y_OFFSET,
-  MIN_OBSTACLE_INTERVAL,
   MAX_OBSTACLE_INTERVAL,
-  OBSTACLE_SPEED_FACTOR,
   MAX_GAME_SPEED,
   SCORE_INCREMENT_INTERVAL,
   GAME_SPEED_INCREMENT,
@@ -17,47 +15,14 @@ import {
   DINO_HITBOX_INSET_WIDTH,
   OBSTACLE_HITBOX_INSET_X,
   OBSTACLE_HITBOX_INSET_WIDTH,
+  DINO_CHARACTERS,
+  DinoCharacterType,
 } from '../config/constants';
 import { playSound } from '../utils';
-import { CloudState } from '../types';
-
-// --- Types ---
-export interface DinoState {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  velocityY: number;
-  isJumping: boolean;
-  runFrame: number;
-  frameTime: number;
-}
-
-export interface ObstacleState {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  type: 'small' | 'large';
-}
-
-export interface GameEngineState {
-  status: 'ready' | 'playing' | 'paused' | 'over';
-  dino: DinoState;
-  obstacles: ObstacleState[];
-  clouds: CloudState[];
-  score: number;
-  gameSpeed: number;
-  groundY: number;
-  lastObstacleTime: number;
-  gameStartTime: number;
-  spritesLoaded: boolean;
-  gravity: number;
-  obstacleInterval: number;
-}
+import { GameEngineState, ObstacleState } from '../types';
 
 // --- Core Game Logic ---
-export function createInitialGameState(): GameEngineState {
+export function createInitialGameState(character: DinoCharacterType = DINO_CHARACTERS.DOUX): GameEngineState {
   return {
     status: 'ready',
     dino: {
@@ -69,6 +34,8 @@ export function createInitialGameState(): GameEngineState {
       isJumping: false,
       runFrame: 1,
       frameTime: 0,
+      character: character,
+      crouching: false,
     },
     obstacles: [],
     clouds: [],
@@ -92,7 +59,10 @@ export function setGround(state: GameEngineState, canvasHeight: number): void {
 
 export function startGame(state: GameEngineState): GameEngineState {
   if (state.status === 'ready' || state.status === 'over') {
-    const initialState = createInitialGameState();
+    // Preserve the character when restarting
+    const selectedCharacter = state.dino.character as DinoCharacterType;
+    
+    const initialState = createInitialGameState(selectedCharacter);
     return {
       ...initialState,
       status: 'playing',
@@ -113,7 +83,10 @@ export function startGame(state: GameEngineState): GameEngineState {
 }
 
 export function resetGame(state: GameEngineState): GameEngineState {
-  const initialState = createInitialGameState();
+  // Preserve the character when resetting
+  const selectedCharacter = state.dino.character as DinoCharacterType;
+  
+  const initialState = createInitialGameState(selectedCharacter);
   return {
     ...initialState,
     status: 'ready',
@@ -129,8 +102,18 @@ export function resetGame(state: GameEngineState): GameEngineState {
   };
 }
 
+export function changeCharacter(state: GameEngineState, character: DinoCharacterType): GameEngineState {
+  return {
+    ...state,
+    dino: {
+      ...state.dino,
+      character: character,
+    }
+  };
+}
+
 export function triggerJump(state: GameEngineState): GameEngineState {
-  if (state.status === 'playing' && !state.dino.isJumping) {
+  if (state.status === 'playing' && !state.dino.isJumping && !state.dino.crouching) {
     playSound('jump');
     return {
       ...state,
@@ -138,6 +121,21 @@ export function triggerJump(state: GameEngineState): GameEngineState {
         ...state.dino,
         isJumping: true,
         velocityY: JUMP_INITIAL_VELOCITY,
+      },
+    };
+  }
+  return state;
+}
+
+export function toggleCrouch(state: GameEngineState, isCrouching: boolean): GameEngineState {
+  if (state.status === 'playing' && !state.dino.isJumping) {
+    return {
+      ...state,
+      dino: {
+        ...state.dino,
+        crouching: isCrouching,
+        height: isCrouching ? DINO_HEIGHT * 0.6 : DINO_HEIGHT,
+        y: state.groundY - (isCrouching ? DINO_HEIGHT * 0.6 : DINO_HEIGHT),
       },
     };
   }
@@ -155,6 +153,8 @@ export function togglePause(state: GameEngineState): GameEngineState {
   }
   return state;
 }
+
+// ... existing functions ...
 
 function applyGravity(state: GameEngineState, deltaTime: number): void {
   if (!state.dino.isJumping) return;
@@ -183,27 +183,47 @@ function updateDinoAnimation(state: GameEngineState, deltaTime: number): void {
   }
 }
 
-function generateObstacle(state: GameEngineState, canvasWidth: number): void {
-  const now = Date.now();
-  const speedFactor = Math.min(state.gameSpeed, MAX_GAME_SPEED);
-  const dynamicInterval = Math.max(
-    MIN_OBSTACLE_INTERVAL,
-    MAX_OBSTACLE_INTERVAL - (speedFactor * OBSTACLE_SPEED_FACTOR)
-  );
+// Optimize obstacle generation to correctly use the cactus sprite sheet
+export function generateObstacle(state: GameEngineState, canvasWidth: number): ObstacleState {
+  const isLarge = Math.random() > 0.5;
+  const type = isLarge ? 'large' : 'small';
+  
+  // Calculate dimensions based on type - scale according to the type
+  const baseWidth = isLarge ? 34 : 24;
+  const baseHeight = isLarge ? 70 : 50;
+  const scale = 0.8 + Math.random() * 0.4; // Random scale between 0.8 and 1.2
+  
+  // Calculate appropriate cactus type from sprite sheet
+  let cactusType: number;
+  
+  if (isLarge) {
+    // Use one of the larger cactus types (3, 4, 5 in the sheet)
+    cactusType = Math.floor(Math.random() * 3) + 3; // Results in 3, 4, or 5
+  } else {
+    // Use one of the smaller cactus types (0, 1, 2 in the sheet)
+    cactusType = Math.floor(Math.random() * 3); // Results in 0, 1, or 2
+  }
 
-  if (state.obstacles.length === 0 || now - state.lastObstacleTime > dynamicInterval) {
-    const isLarge = Math.random() > 0.5;
-    const height = isLarge ? DINO_HEIGHT * 1.5 : DINO_HEIGHT;
-    const width = isLarge ? DINO_WIDTH : DINO_WIDTH * 0.7;
+  return {
+    x: canvasWidth,
+    y: state.groundY - (baseHeight * scale),
+    width: baseWidth * scale,
+    height: baseHeight * scale,
+    type: type,
+    cactusType: cactusType, // Set the cactus type for sprite sheet rendering
+  };
+}
 
-    state.obstacles.push({
-      x: canvasWidth,
-      y: state.groundY - height,
-      width,
-      height,
-      type: isLarge ? 'large' : 'small',
-    });
-    state.lastObstacleTime = now;
+function generateObstacles(state: GameEngineState, deltaTime: number, canvasWidth: number): void {
+  const currentTime = Date.now();
+  
+  // Dynamically adjust obstacle interval based on game speed
+  // As the game gets faster, obstacles appear more frequently
+  const dynamicInterval = MAX_OBSTACLE_INTERVAL - (state.gameSpeed - INITIAL_GAME_SPEED);
+  
+  if (currentTime - state.lastObstacleTime > dynamicInterval) {
+    state.obstacles.push(generateObstacle(state, canvasWidth));
+    state.lastObstacleTime = currentTime;
   }
 }
 
@@ -217,32 +237,51 @@ function updateObstacles(state: GameEngineState, deltaTime: number): void {
   }
 }
 
-function checkCollisions(state: GameEngineState): boolean {
+// Optimize collision detection for better performance
+export function checkCollision(state: GameEngineState): boolean {
   const dino = state.dino;
+  
+  // Apply hitbox adjustments for more accurate collisions
   const dinoHitbox = {
-    left: dino.x + DINO_HITBOX_INSET_X,
-    right: dino.x + dino.width - DINO_HITBOX_INSET_WIDTH,
-    top: dino.y,
-    bottom: dino.y + dino.height,
+    x: dino.x + DINO_HITBOX_INSET_X,
+    y: dino.y,
+    width: dino.width - DINO_HITBOX_INSET_WIDTH,
+    height: dino.height
   };
-
+  
+  // Fast path: if there are no obstacles, we can skip collision detection
+  if (state.obstacles.length === 0) return false;
+  
+  // Check collision with each obstacle
   for (const obstacle of state.obstacles) {
-    const obsHitbox = {
-      left: obstacle.x + OBSTACLE_HITBOX_INSET_X,
-      right: obstacle.x + obstacle.width - OBSTACLE_HITBOX_INSET_WIDTH,
-      top: obstacle.y,
-      bottom: obstacle.y + obstacle.height,
+    // Only check collisions with obstacles in front of or under the dino
+    if (obstacle.x > dinoHitbox.x + dinoHitbox.width) {
+      continue; // Skip obstacles that are completely ahead
+    }
+    
+    if (obstacle.x + obstacle.width < dinoHitbox.x) {
+      continue; // Skip obstacles that are completely behind
+    }
+    
+    // Apply hitbox adjustments for obstacles
+    const obstacleHitbox = {
+      x: obstacle.x + OBSTACLE_HITBOX_INSET_X,
+      y: obstacle.y,
+      width: obstacle.width - OBSTACLE_HITBOX_INSET_WIDTH,
+      height: obstacle.height
     };
-
+    
+    // Check if hitboxes overlap
     if (
-      dinoHitbox.right > obsHitbox.left &&
-      dinoHitbox.left < obsHitbox.right &&
-      dinoHitbox.bottom > obsHitbox.top &&
-      dinoHitbox.top < obsHitbox.bottom
+      dinoHitbox.x < obstacleHitbox.x + obstacleHitbox.width &&
+      dinoHitbox.x + dinoHitbox.width > obstacleHitbox.x &&
+      dinoHitbox.y < obstacleHitbox.y + obstacleHitbox.height &&
+      dinoHitbox.y + dinoHitbox.height > obstacleHitbox.y
     ) {
-      return true;
+      return true; // Collision detected
     }
   }
+  
   return false;
 }
 
@@ -272,12 +311,12 @@ export function updateGame(state: GameEngineState, deltaTime: number, canvasWidt
   // Update game mechanics
   applyGravity(newState, deltaTime);
   updateDinoAnimation(newState, deltaTime);
-  generateObstacle(newState, canvasWidth);
+  generateObstacles(newState, deltaTime, canvasWidth);  // Call the function to generate obstacles
   updateObstacles(newState, deltaTime);
   updateScoreAndSpeed(newState, deltaTime);
 
   // Check for collisions
-  if (checkCollisions(newState)) {
+  if (checkCollision(newState)) {
     playSound('die');
     return { ...newState, status: 'over' };
   }

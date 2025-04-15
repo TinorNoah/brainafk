@@ -12,6 +12,7 @@ interface UseGameInputOptions {
   onStart: () => void;
   onReset: () => void;
   onTogglePause: () => void;
+  onCrouch?: (isCrouching: boolean) => void;
 }
 
 export const useGameInput = ({
@@ -22,6 +23,7 @@ export const useGameInput = ({
   onStart,
   onReset,
   onTogglePause,
+  onCrouch,
 }: UseGameInputOptions) => {
   // Keyboard input handler
   const handleKeyDown = useCallback(
@@ -29,7 +31,7 @@ export const useGameInput = ({
       if (!gameState.isActive) return;
 
       // Prevent default actions for game controls
-      if (['Space', 'ArrowUp', 'Enter'].includes(e.code)) {
+      if (['Space', 'ArrowUp', 'Enter', 'ArrowDown', 'ShiftLeft', 'ShiftRight'].includes(e.code)) {
         e.preventDefault();
       }
 
@@ -50,10 +52,25 @@ export const useGameInput = ({
           } else {
             onReset();
           }
+        } else if (e.code === 'ArrowDown' || e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
+          // Handle crouch when down arrow is pressed
+          onCrouch?.(true);
         }
       }
     },
-    [gameState, isPaused, onJump, onStart, onReset, onTogglePause]
+    [gameState, isPaused, onJump, onStart, onReset, onTogglePause, onCrouch]
+  );
+
+  // Keyboard key up handler for releasing crouch
+  const handleKeyUp = useCallback(
+    (e: KeyboardEvent) => {
+      if (!gameState.isActive || isPaused || !gameState.isStarted || gameState.isGameOver) return;
+
+      if (e.code === 'ArrowDown' || e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
+        onCrouch?.(false);
+      }
+    },
+    [gameState, isPaused, onCrouch]
   );
 
   // Mouse/touch input handler
@@ -78,6 +95,8 @@ export const useGameInput = ({
   // Set up event listeners
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    
     const canvas = canvasRef.current;
     
     if (canvas) {
@@ -87,10 +106,12 @@ export const useGameInput = ({
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+      
       if (canvas) {
         canvas.removeEventListener('mousedown', handlePointerDown);
         canvas.removeEventListener('touchstart', handlePointerDown as EventListener);
       }
     };
-  }, [handleKeyDown, handlePointerDown, canvasRef]);
+  }, [handleKeyDown, handleKeyUp, handlePointerDown, canvasRef]);
 };
