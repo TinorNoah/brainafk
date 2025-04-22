@@ -39,10 +39,10 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         {
           delay: stagger(300), // tighter exit stagger
           keyframes: [
-            { translateY: '-100vh', opacity: 0, scaleY: 1, scaleX: 1 },
-            { translateY: '15vh', opacity: 1, scaleY: 0.7, scaleX: 1.3, duration: 600, easing: 'easeOutQuad' },
-            { translateY: '-5vh', scaleY: 1.2, scaleX: 0.8, duration: 400, easing: 'easeInOutQuad' },
-            { translateY: '0vh', scaleY: 1, scaleX: 1, duration: 400, easing: 'easeOutBounce' },
+            { translateY: '-50vh', opacity: 0, scaleY: 1, scaleX: 1 },
+            { translateY: '10vh', opacity: 1, scaleY: 0.7, scaleX: 1.3, duration: 200, easing: 'easeOutQuad' },
+            { translateY: '-5vh', scaleY: 1.2, scaleX: 0.8, duration: 150, easing: 'easeInOutQuad' },
+            { translateY: '0vh', scaleY: 1, scaleX: 1, duration: 150, easing: 'easeOutBounce' },
           ],
         }
       )

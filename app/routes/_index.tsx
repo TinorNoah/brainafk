@@ -145,7 +145,7 @@ export default function Index() {
         {/* Fun animated header with bouncy effect for the Tinor text */}
         <div className="mb-8 text-center">
           <h1 className="text-6xl md:text-7xl font-bold chrome-gradient transition-all duration-300 hover:scale-105 cursor-pointer">
-            {Array.from("Tinor").map((letter, index) => (
+            {Array.from("TINOR").map((letter, index) => (
               <span 
                 key={index} 
                 className={`inline-block ${pageLoaded ? 'bouncy-entrance' : 'opacity-0'}`}
