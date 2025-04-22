@@ -1,8 +1,9 @@
 import type { MetaFunction } from "@remix-run/node";
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect, useRef } from "react";
 import Star from "~/components/ui/Star";
 import SplashScreen from "~/features/splash-screen/SplashScreen";
 import { useColorScheme } from "~/hooks/useColorScheme";
+import { animate } from "animejs";
 
 export const meta: MetaFunction = () => {
   return [
@@ -10,9 +11,6 @@ export const meta: MetaFunction = () => {
     { name: "description", content: "Welcome to my personal space on the web. Connect with me through various social platforms!" },
   ];
 };
-
-// Lazy load the DinoGame component using our refactored component
-const DinoGame = lazy(() => import('~/features/dino-game/DinoGameContainer'));
 
 export default function Index() {
   // Use our custom hook for color scheme management
@@ -22,7 +20,8 @@ export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
   const [stars, setStars] = useState<React.ReactNode[]>([]);
   const [pageLoaded, setPageLoaded] = useState(false);
-  const [showDinoGame, setShowDinoGame] = useState(false);
+  const buttonRef = useRef<HTMLAnchorElement>(null);
+  const [showTooltip, setShowTooltip] = useState(false);
   
   // Generate stars for background
   useEffect(() => {
@@ -43,6 +42,22 @@ export default function Index() {
   // Set pageLoaded after initial render
   useEffect(() => {
     setPageLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (buttonRef.current) {
+      animate(
+        {
+          targets: buttonRef.current,
+          scale: [0.7, 1],
+          opacity: [0, 1],
+        },
+        {
+          duration: 900,
+          easing: "easeOutElastic(1, .8)",
+        }
+      );
+    }
   }, []);
   
   const socialLinks = [
@@ -103,13 +118,26 @@ export default function Index() {
         {colorMode === 'light' ? '🌙' : '☀️'}
       </button>
       
-      {/* Bargraph Page Button (top right) */}
-      <div className="fixed top-4 right-4 z-20">
+      {/* Bargraph Page Button (top left) */}
+      <div className="fixed top-4 left-4 z-20">
         <a
+          ref={buttonRef}
           href="/bargraph"
-          className="inline-block px-6 py-3 bg-gradient-to-r from-green-500 to-blue-600 text-white font-medium rounded-full shadow-lg hover:shadow-green-500/20 hover:shadow-xl transition-all duration-300 border border-green-400/30 text-base"
+          className="inline-block px-4 py-2 bg-gray-900/80 border border-pink-500/40 shadow-lg rounded-full text-sm relative overflow-visible group transition-all duration-300 hover:shadow-pink-500/30 hover:border-blue-400/60"
+          onMouseEnter={() => setShowTooltip(true)}
+          onMouseLeave={() => setShowTooltip(false)}
         >
-          📊 View AI Pricing Bargraph
+          <span className="relative z-10 flex items-center chrome-gradient font-bold">
+            AI API PRICE
+          </span>
+          {/* Tooltip on hover */}
+          {showTooltip && (
+            <span className="absolute top-full left-0 mt-2 w-56 bg-gray-900 text-white text-xs rounded-lg shadow-lg px-4 py-2 z-20 border border-pink-400/40 animate-fade-in"
+              style={{ minWidth: '12rem', maxWidth: '16rem' }}
+            >
+              Explore and compare the latest AI model API pricing for input and output tokens, with interactive charts and filters.
+            </span>
+          )}
         </a>
       </div>
 
@@ -120,36 +148,13 @@ export default function Index() {
             {Array.from("Tinor").map((letter, index) => (
               <span 
                 key={index} 
-                className={`inline-block ${pageLoaded ? 'bouncy-entrance' : 'opacity-0'} ${
-                  index === 0 ? 'relative group' : ''
-                }`}
+                className={`inline-block ${pageLoaded ? 'bouncy-entrance' : 'opacity-0'}`}
                 style={{ 
-                  '--delay': `${index * 0.05}s`, // Use CSS variable
-                  ...(index === 0 ? {
-                    transition: 'all 0.3s ease',
-                  } : {})
+                  '--delay': `${index * 0.05}s` // Use CSS variable
                 } as React.CSSProperties}
                 data-text={letter}
-                onClick={index === 0 ? () => setShowDinoGame(true) : undefined}
-                onKeyDown={index === 0 ? (e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    setShowDinoGame(true);
-                  }
-                } : undefined}
-                tabIndex={index === 0 ? 0 : undefined}
-                role={index === 0 ? "button" : undefined}
-                aria-label={index === 0 ? "Play Dino Game" : undefined}
               >
                 {letter}
-                {index === 0 && (
-                  <>
-                    {/* Easter egg hover effect for the T */}
-                    <span className="absolute inset-0 bg-gradient-to-r from-blue-400 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 rounded-md"></span>
-                    <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-20 pointer-events-none">
-                      Click for a surprise!
-                    </span>
-                  </>
-                )}
               </span>
             ))}
           </h1>
@@ -157,13 +162,6 @@ export default function Index() {
             Welcome to my digital playground!
           </div>
         </div>
-        
-        {/* Dino Game Modal */}
-        {showDinoGame && (
-          <Suspense fallback={<div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">Loading game...</div>}>
-            <DinoGame onClose={() => setShowDinoGame(false)} />
-          </Suspense>
-        )}
         
         {/* Brief intro */}
         <div className="max-w-2xl text-center mb-12 p-6 bg-gray-900/70 rounded-lg shadow-xl backdrop-blur-sm">
