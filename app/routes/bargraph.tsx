@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "@remix-run/react";
 import { parseCsv } from "../lib/csv-parser";
 import {
   BarChart,
@@ -134,8 +135,21 @@ export default function BargraphPage() {
   };
 
   return (
-    <main className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold mb-6">AI Model Pricing Bargraph</h1>
+    <div className="min-h-screen bg-black relative">
+      {/* Back button */}
+      <div className="fixed top-4 left-4 z-20">
+        <Link
+          to="/"
+          className="inline-block px-4 py-2 bg-gray-900/80 border border-pink-500/40 shadow-lg rounded-full text-sm relative overflow-visible group transition-all duration-300 hover:shadow-pink-500/30 hover:border-blue-400/60 hover:scale-105"
+        >
+          <span className="relative z-10 flex items-center chrome-gradient font-bold">
+            ← BACK TO HOME
+          </span>
+        </Link>
+      </div>
+      
+      <main className="container mx-auto py-10 pt-20">
+        <h1 className="text-3xl font-bold mb-6 chrome-gradient">AI Model Pricing Bargraph</h1>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-3">
           <div className="h-[600px] w-full">
@@ -192,5 +206,6 @@ export default function BargraphPage() {
         </div>
       </div>
     </main>
+    </div>
   );
 }

@@ -17,7 +17,13 @@ export default function Index() {
   const { colorMode, toggleColorMode } = useColorScheme();
   
   const [hoverIcon, setHoverIcon] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => {
+    // Check if splash screen has been shown in this session
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('splashScreenShown');
+    }
+    return true;
+  });
   const [stars, setStars] = useState<React.ReactNode[]>([]);
   const [pageLoaded, setPageLoaded] = useState(false);
   const buttonRef = useRef<HTMLAnchorElement>(null);
@@ -100,8 +106,16 @@ export default function Index() {
     },
   ];
 
+  const handleSplashComplete = () => {
+    // Mark splash screen as shown in sessionStorage
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('splashScreenShown', 'true');
+    }
+    setIsLoading(false);
+  };
+
   if (isLoading) {
-    return <SplashScreen onComplete={() => setIsLoading(false)} />;
+    return <SplashScreen onComplete={handleSplashComplete} />;
   }
 
   return (

@@ -26,6 +26,10 @@ export const links: LinksFunction = () => [
   // Use the imported URL directly instead of accessing a default export
   { rel: "stylesheet", href: tailwindStylesUrl },
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
+  // Favicon configuration using logo.png
+  { rel: "icon", type: "image/png", href: "/logo.png" },
+  { rel: "apple-touch-icon", href: "/logo.png" },
+  { rel: "shortcut icon", href: "/logo.png" },
 ];
 
 export default function App() {
