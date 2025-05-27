@@ -17,13 +17,7 @@ export default function Index() {
   const { colorMode, toggleColorMode } = useColorScheme();
   
   const [hoverIcon, setHoverIcon] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(() => {
-    // Check if splash screen has been shown in this session
-    if (typeof window !== 'undefined') {
-      return !sessionStorage.getItem('splashScreenShown');
-    }
-    return true;
-  });
+  const [isLoading, setIsLoading] = useState(true); // Always start with true for consistent SSR
   const [stars, setStars] = useState<React.ReactNode[]>([]);
   const [pageLoaded, setPageLoaded] = useState(false);
   const buttonRef = useRef<HTMLAnchorElement>(null);
@@ -48,6 +42,16 @@ export default function Index() {
   // Set pageLoaded after initial render
   useEffect(() => {
     setPageLoaded(true);
+  }, []);
+
+  // Check sessionStorage on client side to determine if splash should be shown
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const splashShown = sessionStorage.getItem('splashScreenShown');
+      if (splashShown) {
+        setIsLoading(false);
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -132,11 +136,11 @@ export default function Index() {
         {colorMode === 'light' ? '🌙' : '☀️'}
       </button>
       
-      {/* Bargraph Page Button (top left) */}
+      {/* AI API Pricing Page Button (top left) */}
       <div className="fixed top-4 left-4 z-20">
         <a
           ref={buttonRef}
-          href="/bargraph"
+          href="/ai_api_pricing"
           className="inline-block px-4 py-2 bg-gray-900/80 border border-pink-500/40 shadow-lg rounded-full text-sm relative overflow-visible group transition-all duration-300 hover:shadow-pink-500/30 hover:border-blue-400/60"
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}

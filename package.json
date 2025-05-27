@@ -8,14 +8,18 @@
     "dev": "remix vite:dev",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "remix-serve ./build/server/index.js",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "setup:appwrite": "node scripts/setup-appwrite-collection.js"
   },
   "dependencies": {
     "@remix-run/node": "^2.16.4",
     "@remix-run/react": "^2.16.4",
     "@remix-run/serve": "^2.16.4",
     "animejs": "^4.0.1",
+    "appwrite": "^18.1.1",
+    "dotenv": "^16.5.0",
     "isbot": "^4.1.0",
+    "node-appwrite": "^17.0.0",
     "pixi.js": "^8.9.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
