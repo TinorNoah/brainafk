@@ -40,12 +40,12 @@ function getAPIKey(): string {
   if (typeof window !== 'undefined') {
     throw new Error('API key should not be accessed on the client side');
   }
-  
+
   const apiKey = process.env.ARTIFICIAL_ANALYSIS_API_KEY;
   if (!apiKey) {
     throw new Error('ARTIFICIAL_ANALYSIS_API_KEY environment variable is not set');
   }
-  
+
   return apiKey;
 }
 
@@ -54,7 +54,7 @@ export class ArtificialAnalysisAPI {
   private cache: { data: ModelPricing[]; timestamp: number } | null = null;
   private readonly CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
-  private constructor() {}
+  private constructor() { }
 
   public static getInstance(): ArtificialAnalysisAPI {
     if (!ArtificialAnalysisAPI.instance) {
@@ -94,34 +94,34 @@ export class ArtificialAnalysisAPI {
   public async getModels(): Promise<ModelPricing[]> {
     try {
       const appwriteService = getAppwriteService();
-      
+
       // Check if Appwrite cache is valid
       const isCacheValid = await appwriteService.isCacheValid(24); // 24 hours
-      
+
       if (isCacheValid) {
         console.log('Using cached data from Appwrite database');
         const cachedModels = await appwriteService.getModels();
-        
+
         // Update local cache for faster subsequent access
         this.cache = {
           data: cachedModels,
           timestamp: Date.now(),
         };
-        
+
         return cachedModels;
       }
 
       // Fetch fresh data from API
       console.log('Fetching fresh data from Artificial Analysis API');
       const models = await this.fetchModels();
-      
+
       // Try to store in Appwrite (with graceful fallback)
       try {
         await appwriteService.storeModels(models);
       } catch (appwriteError) {
         console.warn('Failed to store in Appwrite, continuing without cache:', appwriteError);
       }
-      
+
       // Update local cache
       this.cache = {
         data: models,
@@ -131,13 +131,13 @@ export class ArtificialAnalysisAPI {
       return models;
     } catch (error) {
       console.error('Error in getModels:', error);
-      
+
       // Try to fallback to local cache
       if (this.cache && this.cache.data) {
         console.log('Using local cache as fallback');
         return this.cache.data;
       }
-      
+
       // Try to fallback to Appwrite cache (even if expired)
       try {
         const appwriteService = getAppwriteService();
@@ -149,7 +149,7 @@ export class ArtificialAnalysisAPI {
       } catch (appwriteError) {
         console.error('Error accessing Appwrite fallback:', appwriteError);
       }
-      
+
       // If all else fails, throw error
       throw error;
     }
@@ -176,7 +176,7 @@ export class ArtificialAnalysisAPI {
       const appwriteService = getAppwriteService();
       const lastUpdated = await appwriteService.getLatestCacheTimestamp();
       const isValid = await appwriteService.isCacheValid(24);
-      
+
       return {
         hasCache: !!lastUpdated,
         lastUpdated: lastUpdated || undefined,
@@ -184,7 +184,7 @@ export class ArtificialAnalysisAPI {
       };
     } catch (error) {
       console.error('Error getting cache info from Appwrite:', error);
-      
+
       // Fallback to local cache info
       return {
         hasCache: !!this.cache,
@@ -205,5 +205,6 @@ export function transformToChartData(models: ModelPricing[]) {
     intelligenceIndex: model.evaluations?.artificial_analysis_intelligence_index,
     codingIndex: model.evaluations?.artificial_analysis_coding_index,
     mathIndex: model.evaluations?.artificial_analysis_math_index,
+    speed: model.median_output_tokens_per_second,
   }));
 }

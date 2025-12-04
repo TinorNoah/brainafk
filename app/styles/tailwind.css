@@ -30,15 +30,6 @@ body {
 /* Add some spacing between letters in the title */
 h1.chrome-gradient span {
   margin: 0 0.02em;
-  
-  /* Important - ensure the gradient works properly by resetting styles on spans */
-  background: inherit;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  
-  /* Ensure the letter is visible in all browsers */
-  color: white;
 }
 
 /* Special hover effect for the first letter in Tinor */
