@@ -1,498 +1,776 @@
-# Technology Stack - Personal Platform (Nhost-Optimized)
+# Technology Stack V2 - BrainAFK Platform
 
-*Simplified and optimized technology stack using Nhost as the unified backend service, eliminating the need for separate authentication and file storage solutions.*
+*Modern, self-hosted technology stack with AI/ML capabilities, advanced security, and comprehensive monitoring.*
 
-## 🏗️ **Simplified Architecture Overview**
+## 🏗️ Architecture Overview
 
-### **Nhost-Centric Architecture**
+### High-Level Architecture
+
 ```yaml
-Frontend: Astro + React Islands + Standalone React Apps
-Backend:  Nhost (PostgreSQL + GraphQL + Auth + Storage) + Go (Processing)
-Database: Nhost PostgreSQL + Redis
-Auth:     Nhost Hasura Auth (replaces Zitadel)
-Storage:  Nhost Hasura Storage (replaces MinIO)
-Deploy:   Docker + Traefik + Self-hosted Infrastructure
+Frontend:  Remix (Current) → Astro + React Islands (Future)
+Backend:   Nhost (GraphQL + Auth + Storage) + Go + Python
+Database:  PostgreSQL 16+ + Redis + MeiliSearch
+Security:  Fail2ban + Vault
+Deploy:    Docker Compose + Traefik + Self-hosted
+Monitor:   Grafana + Prometheus + Loki
 ```
 
-## 🎯 **Frontend Architecture** 
-*(Unchanged from previous design)*
+## 🎯 Frontend Architecture
 
-### **Core Framework Strategy**
+### Current Implementation
+
+**Remix Framework**
+- TypeScript with Vite build system
+- Tailwind CSS for styling
+- Server-side rendering (SSR)
+- File-based routing
+
+**Technology Stack**
 ```yaml
-Static/Content Pages: Astro with React Islands
-  - Portfolio showcase
-  - Blog and news content
-  - Landing pages
-  - Course materials
-  - SEO-critical pages
-
-Interactive Applications: React 19 + Vite
-  - AI pricing dashboard
-  - Browser games
-  - Complex utility tools
-  - Real-time features
-
-Current: Remix (Migration Path Defined)
-  - Existing implementation
-  - Gradual migration to Astro + React
-```
-
-### **Frontend Technology Stack**
-
-#### **Astro (Content & Static Pages)**
-```yaml
-Framework: Astro 4+
-Integrations:
-  - @astrojs/react (React islands)
-  - @astrojs/tailwind (Styling)
-  - @astrojs/mdx (Content management)
-  - @astrojs/sitemap (SEO)
-  - @astrojs/rss (Blog feeds)
-  
-Output: Hybrid (Static + SSR)
-Adapter: @astrojs/node (Self-hosting)
-```
-
-#### **React Applications**
-```yaml
-Framework: React 19
-Build Tool: Vite 5+
-Language: TypeScript 5+
-
-State Management:
-  - Zustand (Global state)
-  - TanStack Query (Server state)
-  - React Context (Component state)
-
-Routing:
-  - React Router v6 (SPA apps)
-  - Astro routing (Static pages)
-
-Data Fetching:
-  - Apollo Client (GraphQL with Nhost)
-  - TanStack Query (REST with Go backend)
-  - Nhost React hooks (Authentication)
-```
-
-#### **UI & Styling**
-```yaml
-CSS Framework: Tailwind CSS 3+
-Component Library: Radix UI + shadcn/ui
+Framework: Remix + React
+Build: Vite + TypeScript
+Styling: Tailwind CSS + shadcn/ui
+State: Zustand + TanStack Query
 Icons: Lucide React
-Animations: Framer Motion
-Charts: Chart.js + D3.js + Recharts
-
-Design System:
-  - Shared component library
-  - Design tokens
-  - Consistent theming
-  - Dark/light mode support
 ```
 
-## ⚙️ **Simplified Backend Architecture**
+### Migration Strategy (Future)
 
-### **2.1 Nhost Unified Backend (Primary)**
+**Static Content → Astro + React Islands**
+- Portfolio, blog, landing pages
+- SEO-optimized static generation
+- React components for interactivity
+
+**Interactive Apps → React + Vite**
+- AI pricing dashboard
+- Browser games
+- Real-time applications
+
+## ⚙️ Backend Architecture
+
+### Nhost Unified Backend
+
+**Core Services**
 ```yaml
-Complete Backend-as-a-Service:
-  ✅ PostgreSQL Database (with auto-generated GraphQL API)
-  ✅ Hasura Auth (JWT-based authentication system)
-  ✅ Hasura Storage (file storage and management)
-  ✅ Real-time Subscriptions (GraphQL subscriptions)
-  ✅ Serverless Functions (Node.js/TypeScript)
-  ✅ Email Service Integration
-  ✅ Admin Dashboard (Hasura Console)
-  ✅ Permission System (Row-level security)
-
-Self-Hosted Components:
-  - PostgreSQL 15+ with Hasura
-  - Hasura Auth service
-  - Hasura Storage (MinIO-based internally)
-  - Hasura GraphQL Engine
-  - Mail service (configurable SMTP)
+PostgreSQL Database: Managed database with automatic backups
+GraphQL API: Auto-generated from PostgreSQL schema
+Authentication: JWT-based with OAuth providers
+File Storage: S3-compatible with CDN integration
+Real-time: GraphQL subscriptions
+Admin: Hasura console for database management
 ```
 
-### **2.2 Go Backend (Specialized Processing)**
+**Features**
+- Automatic API generation from database schema
+- Built-in authentication and authorization
+- File upload with image optimization
+- Real-time subscriptions for live updates
+
+### Go Backend Services
+
+**High-Performance Processing**
 ```yaml
-Framework: Go + Gin (HTTP router)
-Language: Go 1.21+
-Architecture: Microservices
-
-Specialized Services:
-  - AI Pricing Engine (complex financial calculations)
-  - Data Processing Service (ETL pipelines, analytics)
-  - Game Logic Service (real-time game processing)
-  - Background Job Processor (scheduled tasks)
-  - External API Integration Service
-  - Performance-Critical Algorithms
-
-Integration with Nhost:
-  - GraphQL mutations (write processed data)
-  - GraphQL queries (read user/config data)
-  - Authentication validation (JWT verification)
-  - File upload processing (via Hasura Storage)
+Framework: Go + Gin
+Use Cases:
+  - AI pricing calculations
+  - Game logic processing
+  - Background job processing
+  - External API integrations
+  - Performance-critical algorithms
 ```
 
-### **2.3 Unified Database Strategy**
+### Python AI/ML Services
 
-#### **Nhost PostgreSQL (Primary Database)**
+**Machine Learning Pipeline**
+```yaml
+Framework: FastAPI + Celery
+Services:
+  - ML model training and inference
+  - Natural language processing
+  - Computer vision and OCR
+  - Data science pipelines
+  - AI integration hub (OpenAI, Anthropic)
+
+Key Libraries:
+  - FastAPI (async web framework)
+  - Celery (distributed task queue)
+  - pandas/polars (data manipulation)
+  - scikit-learn (machine learning)
+  - transformers (Hugging Face models)
+```
+
+## 🗄️ Database Architecture
+
+### Nhost PostgreSQL (Managed Database)
+
+> **Note**: Nhost provides a fully managed PostgreSQL database as part of their service. No separate PostgreSQL setup required.
+
+**Core Data**
 ```sql
--- Authentication & Users (managed by Hasura Auth)
-auth.users, auth.user_roles, auth.user_sessions, auth.refresh_tokens
+-- Authentication (managed by Hasura Auth)
+auth.users, auth.user_roles, auth.sessions
 
--- User Profiles & Application Data
-public.user_profiles, user_preferences, user_settings, user_achievements
-
--- Content Management System
-blog_posts, news_articles, learning_paths, tutorials, project_gallery
-
--- Portfolio & Professional Data
-skills, experiences, testimonials, projects, career_history
-
--- File Management (integrated with Hasura Storage)
-storage.files, storage.file_metadata, storage.buckets
+-- Application Data
+user_profiles, blog_posts, projects, skills
 
 -- Gaming Platform
-games, game_sessions, leaderboards, player_stats, achievements
+games, game_sessions, leaderboards, achievements
 
--- AI Pricing Data (populated by Go backend)
-ai_models, pricing_data, pricing_history, model_comparisons
+-- AI/ML Data
+ai_models, pricing_data, ml_experiments
 
--- Analytics & Engagement
-page_views, user_sessions, engagement_metrics, feedback_submissions
+-- Analytics
+page_views, user_sessions, engagement_metrics
 ```
 
-#### **Database Extensions & External Storage**
+**Nhost Database Features**
+- Fully managed PostgreSQL with automatic backups
+- Auto-generated GraphQL API from schema
+- Real-time subscriptions for live data
+- Built-in row-level security (RLS)
+- Database migrations via Hasura console
+
+**Optional Extensions** (if using self-hosted PostgreSQL)
+- pgvector (vector similarity search)
+- TimescaleDB (time-series optimization)
+- pg_stat_statements (query monitoring)
+
+### Redis (Cache & Queue)
+
+**Use Cases**
+- Session caching
+- API response caching
+- Rate limiting
+- Task queues (Celery)
+- Real-time game state
+
+### MeiliSearch (Search Engine)
+
+**Features**
+- Lightning-fast full-text search (<50ms)
+- Typo tolerance and fuzzy matching
+- Instant search-as-you-type
+- Faceted search and filtering
+
+**Indexed Content**
+- Blog posts and articles
+- Portfolio projects
+- Learning materials
+- User-generated content
+
+## 🔐 Security & Authentication
+
+### Nhost Authentication
+
+**Authentication Methods**
+- Email/password with verification
+- Magic links (passwordless)
+- Social logins (Google, GitHub, Discord)
+- Multi-factor authentication (MFA)
+
+**Security Features**
+- JWT tokens with automatic refresh
+- Role-based access control (RBAC)
+- Session management
+- Brute force protection
+
+### Infrastructure Security
+
+**Fail2ban (Intrusion Prevention)**
+- Real-time log monitoring
+- Automatic IP banning
+- SSH and HTTP protection
+- Custom application filters
+
+**Vault (Secret Management)**
+- Dynamic secret generation
+- Encryption as a service
+- Certificate authority
+- API key management
+
+> **Note**: Nhost Auth handles all application-level authentication. Additional gateway authentication (like Authelia) is unnecessary since Nhost provides comprehensive auth features including SSO, MFA, and session management.
+
+## 📦 Deployment & Infrastructure
+
+### Docker Compose Stack
+
+**Core Services**
 ```yaml
-Standard PostgreSQL (Optimized for Time-Series):
-  - Optimized table schemas for time-based data
-  - Strategic indexing (timestamp, composite indexes)
-  - Manual partitioning by month/quarter
-  - JSON/JSONB for flexible metadata storage
-  
-Redis (External High-Performance Cache):
-  - Session cache and user preferences
-  - Real-time game state and temporary data
-  - Rate limiting and API throttling
-  - Background job queues and task processing
-  - Frequently accessed pricing data cache
+# Reverse Proxy & SSL
+traefik: Automatic HTTPS + load balancing
+
+# Cache & Queue
+redis: Multi-purpose cache and queue
+
+# Search & AI
+meilisearch: Full-text search engine
+python-backend: FastAPI AI/ML services
+go-backend: High-performance processing
+
+# Nhost Stack (includes managed PostgreSQL)
+nhost-backend: Complete backend with database, GraphQL, auth, storage
+
+# Monitoring
+grafana: Metrics visualization
+prometheus: Metrics collection
+loki: Log aggregation
 ```
 
-### **2.4 API Architecture**
+**Security Services**
 ```yaml
-Primary API: Nhost GraphQL (Auto-generated from PostgreSQL schema)
-  - CRUD operations for all main entities
-  - Real-time subscriptions for live data
-  - Built-in authentication and permissions
-  - File upload and management
-  - User management and profiles
-
-Specialized APIs: Go + Gin REST endpoints
-  - /api/v1/pricing/* (AI model pricing analysis)
-  - /api/v1/games/* (real-time game logic)
-  - /api/v1/analytics/* (data processing and reports)
-  - /api/v1/jobs/* (background task management)
-
-WebSocket: Go (Real-time game features, notifications)
-API Documentation: Swagger/OpenAPI for Go APIs
-Rate Limiting: Redis-based for both GraphQL and REST
+fail2ban: Intrusion prevention
+vault: Secret management
 ```
 
-## 🔐 **Authentication & Security (Nhost Hasura Auth)**
-
-### **Hasura Auth Features**
+**Infrastructure Management**
 ```yaml
-Authentication Methods:
-  ✅ Email/Password with verification
-  ✅ Magic links (passwordless login)
-  ✅ Social logins (Google, GitHub, Facebook, Apple, Discord)
-  ✅ Multi-factor authentication (MFA/2FA)
-  ✅ Anonymous users (for games/demos)
+# Container Management
+portainer: Docker container management UI
+watchtower: Automatic container updates
+diun: Docker image update notifications
 
-Security Features:
-  ✅ JWT tokens with automatic refresh
-  ✅ Role-based access control (RBAC)
-  ✅ Custom user metadata and claims
-  ✅ Session management and device tracking
-  ✅ Password policies and security rules
-  ✅ Account verification workflows
-  ✅ Brute force protection and rate limiting
+# CI/CD & Development
+gitea: Self-hosted Git service with CI/CD
+registry: Private Docker registry
+code-server: VS Code in browser (remote development)
 
-Integration:
-  - Nhost React hooks (@nhost/react)
-  - GraphQL permissions (automatic with JWT)
-  - Go backend JWT validation
-  - Row-level security in PostgreSQL
+# Backup & Maintenance
+restic: Encrypted backup service
+cleanup-scripts: Log rotation and maintenance
 ```
 
-### **Eliminated Complexity**
-```yaml
-❌ Removed: Zitadel setup and configuration
-❌ Removed: Custom JWT token management
-❌ Removed: Separate identity provider maintenance
-❌ Removed: OAuth provider configuration
-❌ Removed: User management interface development
+### Configuration Management
 
-✅ Gained: Built-in auth dashboard
-✅ Gained: Automatic user management
-✅ Gained: Pre-configured social logins
-✅ Gained: Integrated permissions system
-```
-
-## 🗄️ **File Storage (Nhost Hasura Storage)**
-
-### **Hasura Storage Features**
-```yaml
-Storage Capabilities:
-  ✅ S3-compatible API (built on MinIO)
-  ✅ File upload with progress tracking
-  ✅ Image transformation and optimization
-  ✅ Access control and permissions
-  ✅ Automatic file metadata management
-  ✅ CDN integration support
-  ✅ File versioning and backup
-
-File Types Supported:
-  - Portfolio images and videos
-  - Game assets and resources
-  - Course materials and documents
-  - User profile pictures and uploads
-  - Blog post media and attachments
-  - AI model documentation and exports
-
-Integration:
-  - Direct upload from React components
-  - GraphQL queries for file metadata
-  - Automatic database relationship management
-  - Built-in permission system
-```
-
-### **Eliminated Complexity**
-```yaml
-❌ Removed: MinIO setup and configuration
-❌ Removed: S3 bucket management
-❌ Removed: Custom file upload endpoints
-❌ Removed: Manual file permission system
-❌ Removed: File metadata database design
-
-✅ Gained: Built-in file management dashboard
-✅ Gained: Automatic file-database integration
-✅ Gained: Pre-configured CDN support
-✅ Gained: Built-in image optimization
-```
-
-## 🚀 **Deployment & Infrastructure (Simplified)**
-
-### **Docker Compose Services (Reduced)**
+**Environment Variables**
 ```yaml
 # Core Infrastructure
-traefik:          # Reverse proxy + HTTPS + Load balancing
-postgres:         # PostgreSQL 15+ (shared with Nhost)
-redis:           # Cache + sessions + job queues
+DOMAIN: Primary domain for services
+POSTGRES_PASSWORD: Database password
+REDIS_PASSWORD: Redis authentication
+SSL_EMAIL: Let's Encrypt email
 
-# Nhost Stack (Unified Backend)
-hasura:          # GraphQL engine + Auto-generated API
-hasura-auth:     # Authentication service
-hasura-storage:  # File storage service
-minio:           # Object storage (internal to Nhost)
-mailhog:         # Email service (development)
+# Nhost Configuration
+NHOST_HASURA_GRAPHQL_ADMIN_SECRET: Hasura admin access
+NHOST_HASURA_GRAPHQL_JWT_SECRET: JWT signing key
+NHOST_AUTH_SMTP_HOST: Email service
 
-# Custom Services
-go-backend:      # Go API server (specialized processing)
-astro-frontend:  # Astro static site + React islands
-react-games:     # Standalone React game applications
-react-dashboard: # AI pricing dashboard React app
-
-# Monitoring (Optional)
-prometheus:      # Metrics collection
-grafana:         # Metrics visualization
+# External Services
+OPENAI_API_KEY: OpenAI integration
+MEILISEARCH_MASTER_KEY: Search engine access
 ```
 
-### **Simplified Configuration**
+## 📊 Performance Targets
+
+### Frontend Performance
+
+**Static Pages (Astro)**
+- Lighthouse Score: 95+
+- First Contentful Paint: <800ms
+- Time to Interactive: <1.5s
+- Bundle Size: <40KB
+
+**Interactive Apps (React)**
+- Time to Interactive: <2.5s
+- JavaScript Bundle: <180KB
+- API Response Time: <200ms
+
+### Backend Performance
+
+**API Response Times**
 ```yaml
-Eliminated Services:
-  ❌ zitadel (replaced by hasura-auth)
-  ❌ zitadel-db (auth now uses main PostgreSQL)
-  ❌ custom-minio (integrated into Nhost)
-  ❌ custom-auth-api (hasura-auth handles this)
-
-Environment Variables Reduced:
-  ❌ ZITADEL_* (30+ variables eliminated)
-  ❌ MINIO_* (10+ variables eliminated)
-  ❌ AUTH_* (custom auth variables eliminated)
-
-✅ Added: NHOST_* (5-10 simple variables)
-✅ Simplified: Single authentication flow
-✅ Unified: All backend services under Nhost umbrella
+GraphQL (Nhost): <50ms (simple), <150ms (complex)
+Go Backend: <100ms (game logic), <300ms (pricing)
+Python AI/ML: <200ms (inference), <500ms (NLP)
+Search (MeiliSearch): <30ms (full-text), <50ms (faceted)
 ```
 
-## 📊 **Development & Integration Benefits**
+**Database Performance**
+- PostgreSQL queries: <50ms (95th percentile)
+- Redis operations: <1ms
+- Cache hit ratio: >90%
 
-### **Developer Experience Improvements**
+## 🚀 Implementation Strategy
+
+### Phase 1: Core Infrastructure (2-3 weeks)
+
+**Infrastructure Setup**
+- Deploy Docker Compose stack
+- Configure Traefik with SSL
+- Set up Redis for caching
+- Deploy monitoring stack (Grafana + Prometheus + Loki)
+
+**Infrastructure Management**
+- Deploy Portainer for container management
+- Set up Watchtower for automatic updates
+- Configure private Docker registry
+- Set up Gitea for self-hosted Git with CI/CD
+
+**Security Implementation**
+- Configure Fail2ban
+- Deploy Vault
+- Implement backup automation with Restic
+
+### Phase 2: Backend Services (2-3 weeks)
+
+**Nhost Stack**
+- Deploy Nhost backend (includes PostgreSQL database)
+- Configure authentication and social logins
+- Set up file storage and CDN
+- Create database schema
+
+**Search Engine**
+- Deploy MeiliSearch
+- Configure search indexes
+- Set up real-time updates
+
+### Phase 3: AI/ML Services (3-4 weeks)
+
+**Python Infrastructure**
+- Deploy FastAPI server
+- Set up Celery workers
+- Configure ML pipelines
+- Integrate external AI APIs
+
+**Go Services**
+- Deploy Go backend
+- Implement pricing engine
+- Set up game logic
+- Configure caching
+
+### Phase 4: Frontend Migration (4-6 weeks)
+
+**Current State (Remix)**
+- Optimize existing implementation
+- Improve performance
+- Enhance user experience
+
+**Future Migration**
+- Plan Astro + React architecture
+- Implement component library
+- Set up build optimization
+
+## 🎯 Technology Advantages
+
+### Why This Stack?
+
+**Unified Backend (Nhost)**
+- Single configuration for auth, database, and storage
+- Auto-generated GraphQL API
+- Real-time subscriptions
+- Reduced operational overhead
+
+**AI/ML Ready**
+- Dedicated Python infrastructure
+- GPU acceleration support
+- Model serving and monitoring
+- External AI integration
+
+**Self-Hosted Benefits**
+- Complete data control
+- No vendor lock-in
+- Predictable costs
+- Custom optimization
+
+**Modern Security**
+- Multi-layer protection
+- Automated threat response
+- Compliance ready
+- Zero-trust architecture
+
+## 🛠️ Development Workflow & CI/CD
+
+### Version Control & Git Strategy
+
+#### Git Workflow
+
 ```yaml
-Frontend Development:
-  ✅ Single authentication SDK (@nhost/react)
-  ✅ Auto-generated TypeScript types from GraphQL schema
-  ✅ Real-time subscriptions out of the box
-  ✅ Simplified file upload components
-  ✅ Built-in form validation and error handling
+Strategy: GitFlow with simplified branches
+Branches:
+  main: Production-ready code (auto-deploy to production)
+  develop: Integration branch for features
+  feature/*: Individual feature development
+  hotfix/*: Critical production fixes
+  release/*: Release preparation and testing
 
-Backend Development:
-  ✅ No custom authentication logic needed
-  ✅ Automatic API generation from database schema
-  ✅ Built-in permission system
-  ✅ Real-time capabilities without WebSocket setup
-  ✅ Simplified database management
-
-DevOps Benefits:
-  ✅ Fewer services to maintain and monitor
-  ✅ Unified logging and error tracking
-  ✅ Single point of configuration for backend
-  ✅ Reduced infrastructure complexity
-  ✅ Faster deployment and scaling
+Repository Structure:
+  Frontend: /app, /public, /scripts
+  Backend: /backend (Go), /ai-services (Python)
+  Infrastructure: /docker, /deploy, /.github
+  Documentation: /docs, README.md
 ```
 
-### **Migration Path from Current Setup**
+#### Git Hooks & Quality Gates
+
 ```yaml
-Phase 1: Setup Nhost Stack
-  - Deploy Nhost services (Hasura + Auth + Storage)
-  - Configure PostgreSQL integration
-  - Set up basic authentication flow
-  - Test file upload functionality
+Pre-commit Hooks:
+  - Code formatting (Prettier, Black, gofmt)
+  - Linting (ESLint, pylint, golangci-lint)
+  - Type checking (TypeScript, mypy)
+  - Security scanning (git-secrets)
+  - Conventional commit format validation
 
-Phase 2: Migrate Authentication
-  - Export users from existing system
-  - Configure Hasura Auth providers
-  - Update frontend to use @nhost/react
-  - Test authentication flows
-
-Phase 3: Migrate File Storage
-  - Transfer files from MinIO to Hasura Storage
-  - Update file upload endpoints
-  - Configure CDN and optimization
-  - Test file access and permissions
-
-Phase 4: Integrate with Go Backend
-  - Configure Go services to use Nhost GraphQL
-  - Update JWT validation for Hasura tokens
-  - Implement GraphQL mutations for data writing
-  - Test end-to-end data flow
-
-Phase 5: Optimize and Scale
-  - Fine-tune permissions and security
-  - Implement caching strategies
-  - Monitor performance and optimize
-  - Deploy to production environment
+Pre-push Hooks:
+  - Unit test execution
+  - Integration test validation
+  - Docker image build verification
+  - Dependency vulnerability scanning
 ```
 
-## 🎯 **Technology Advantages**
+### CI/CD Pipeline Architecture
 
-### **Why Nhost-Centric Architecture?**
+#### GitHub Actions Workflow
 
-#### **Unified Backend Experience**
-- **Single Configuration**: All backend services configured together
-- **Integrated Permissions**: User roles work across database, auth, and storage
-- **Real-time by Default**: GraphQL subscriptions for live updates
-- **Auto-generated APIs**: No manual API development for CRUD operations
-
-#### **Reduced Operational Overhead**
-- **Fewer Services**: 3 backend services instead of 6-8 separate ones
-- **Simplified Monitoring**: Unified logging and metrics
-- **Easier Scaling**: Scale the entire backend as a unit
-- **Reduced Complexity**: Single point of configuration and management
-
-#### **Enhanced Developer Productivity**
-- **Rapid Development**: Auto-generated TypeScript types and hooks
-- **Built-in Features**: Authentication, file upload, real-time ready
-- **Modern Stack**: GraphQL-first with React integration
-- **Self-hosted**: Complete control with BaaS convenience
-
-#### **Performance Benefits**
-- **Optimized Queries**: Hasura provides query optimization
-- **Built-in Caching**: GraphQL response caching
-- **Real-time Efficiency**: WebSocket subscriptions instead of polling
-- **CDN Integration**: Built-in file delivery optimization
-
-## 📈 **Updated Performance Targets**
-
-### **Frontend Performance** *(Unchanged)*
 ```yaml
-Static Pages (Astro):
-  - Lighthouse Score: 95+
-  - First Contentful Paint: <1s
-  - Largest Contentful Paint: <2s
-  - Bundle Size: <50KB
+Trigger Events:
+  - Push to main/develop branches
+  - Pull request creation/updates
+  - Release tag creation
+  - Manual workflow dispatch
+  - Scheduled security scans (weekly)
 
-Interactive Apps (React):
-  - Time to Interactive: <3s
-  - JavaScript Bundle: <200KB
-  - API Response Time: <300ms (improved with GraphQL)
+Pipeline Stages:
+  1. Code Quality & Security
+  2. Build & Test
+  3. Container Image Build
+  4. Deployment (Staging/Production)
+  5. Post-deployment Verification
 ```
 
-### **Backend Performance** *(Improved)*
+#### Detailed CI/CD Pipeline
+
+**Stage 1: Code Quality & Security**
 ```yaml
-GraphQL API (Nhost):
-  - Simple queries: <50ms (improved)
-  - Complex queries: <200ms (improved)
-  - Real-time updates: <30ms (improved)
-  - File uploads: <100ms (optimized)
+Frontend Quality:
+  - TypeScript compilation check
+  - ESLint + Prettier validation
+  - Unit tests (Vitest)
+  - Component tests (React Testing Library)
+  - Bundle size analysis
+  - Lighthouse CI performance audit
 
-Go Processing API:
-  - AI analysis: <500ms
-  - Data processing: <1s
-  - Background jobs: Asynchronous
-  - External API integration: <2s
+Backend Quality:
+  Go Services:
+    - golangci-lint static analysis
+    - Unit + integration tests
+    - Race condition detection
+    - Security vulnerability scanning (gosec)
+    - Code coverage reporting
+  
+  Python Services:
+    - Black code formatting validation
+    - pylint + mypy static analysis
+    - Unit tests (pytest)
+    - Security scanning (bandit)
+    - Dependency vulnerability check (safety)
+
+Security Scanning:
+  - Dependency vulnerability scanning (npm audit, go mod audit)
+  - Docker image vulnerability scanning (Trivy)
+  - Secret detection (git-secrets)
+  - SAST scanning (CodeQL)
+  - License compliance checking
 ```
+
+**Stage 2: Build & Test**
+```yaml
+Frontend Build:
+  - Install dependencies (npm ci)
+  - Build production bundle (Vite)
+  - Generate static assets
+  - Run E2E tests (Playwright)
+  - Performance testing (Lighthouse)
+
+Backend Build:
+  Go Services:
+    - Dependency download and verification
+    - Cross-platform binary compilation
+    - Integration tests with test database
+    - API contract testing
+  
+  Python Services:
+    - Virtual environment setup
+    - Dependency installation (pip)
+    - ML model validation tests
+    - API endpoint testing
+    - Performance benchmarking
+
+Database Testing:
+  - Schema migration validation
+  - Seed data insertion
+  - Query performance testing
+  - Data integrity checks
+```
+
+**Stage 3: Container Image Build**
+```yaml
+Multi-stage Docker Builds:
+  Frontend:
+    - Node.js build stage (dependencies + build)
+    - Nginx production stage (serve static files)
+    - Security hardening (non-root user)
+    - Image optimization (multi-layer caching)
+  
+  Backend Services:
+    - Go: Multi-stage (build + alpine runtime)
+    - Python: Multi-stage (dependencies + slim runtime)
+    - Security scanning integration
+    - Image signing with Cosign
+  
+  Image Registry:
+    - Push to GitHub Container Registry (ghcr.io)
+    - Tag with commit SHA + semantic version
+    - Vulnerability scanning before deployment
+    - Cleanup old images (retention policy)
+```
+
+**Stage 4: Deployment Strategy**
+```yaml
+Staging Deployment:
+  Trigger: Push to develop branch
+  Environment: staging.brainafk.com
+  Process:
+    - Deploy to staging infrastructure
+    - Run smoke tests
+    - Integration tests with external services
+    - Performance validation
+    - Security penetration testing
+
+Production Deployment:
+  Trigger: Push to main branch or release tag
+  Environment: brainafk.com
+  Process:
+    - Blue-green deployment strategy
+    - Database migration execution
+    - Service health checks
+    - Gradual traffic shifting
+    - Rollback capability
+    - Post-deployment monitoring
+
+Deployment Tools:
+  - Docker Compose for service orchestration
+  - Traefik for traffic routing and SSL
+  - Health check endpoints for all services
+  - Automated rollback on health check failure
+```
+
+**Stage 5: Post-deployment Verification**
+```yaml
+Health Checks:
+  - Application health endpoints (/health, /ready)
+  - Database connectivity and performance
+  - External API connectivity (Nhost, OpenAI)
+  - SSL certificate validation
+  - Performance metrics collection
+
+Monitoring & Alerting:
+  - Application performance monitoring
+  - Error rate and response time tracking
+  - Resource utilization monitoring
+  - Security event monitoring
+  - Slack/email notifications for issues
+
+Automated Testing:
+  - Production smoke tests
+  - User journey validation
+  - API contract verification
+  - Performance regression detection
+```
+
+### Container & Infrastructure Management
+
+#### Docker Management Strategy
+
+```yaml
+Container Orchestration:
+  Primary: Docker Compose (current scale)
+  Future: Kubernetes (if scaling beyond single server)
+  
+Container Registry:
+  - GitHub Container Registry (ghcr.io)
+  - Automated image building and pushing
+  - Image vulnerability scanning
+  - Multi-architecture builds (AMD64, ARM64)
+
+Image Optimization:
+  - Multi-stage builds for minimal runtime images
+  - Layer caching for faster builds
+  - Security hardening (non-root users)
+  - Regular base image updates
+```
+
+#### Infrastructure as Code
+
+```yaml
+Repository Structure:
+  /deploy/
+    docker-compose.yml        # Core services
+    docker-compose.prod.yml   # Production overrides
+    docker-compose.dev.yml    # Development overrides
+    .env.example             # Environment template
+    Makefile                 # Common operations
+  
+  /scripts/
+    deploy.sh               # Deployment automation
+    backup.sh              # Database backup automation
+    health-check.sh         # System health validation
+    cleanup.sh             # Log rotation and cleanup
+
+Configuration Management:
+  - Environment-specific configurations
+  - Secret management with Docker secrets
+  - Configuration validation scripts
+  - Automated configuration deployment
+```
+
+#### Deployment Automation
+
+```yaml
+Makefile Commands:
+  make setup          # Initial server setup
+  make deploy         # Deploy latest changes
+  make backup         # Create system backup
+  make restore        # Restore from backup
+  make logs           # View aggregated logs
+  make health         # Run health checks
+  make cleanup        # Clean old containers/images
+  make update         # Update all services
+
+Deployment Script Features:
+  - Zero-downtime deployments
+  - Automatic rollback on failure
+  - Health check validation
+  - Configuration validation
+  - Backup creation before deployment
+  - Slack notifications for deployment status
+```
+
+### Development Environment
+
+#### Local Development Setup
+
+```yaml
+Development Tools:
+  - Docker Compose for local services
+  - Nhost CLI for backend development
+  - VS Code with recommended extensions
+  - Git hooks for code quality
+  - Local testing environment
+
+VS Code Extensions:
+  - TypeScript and React support
+  - Go language support
+  - Python development tools
+  - Docker and Docker Compose
+  - GitLens for Git integration
+  - Prettier for code formatting
+  - ESLint for JavaScript/TypeScript
+  - REST Client for API testing
+
+Local Services:
+  - Redis for caching (Docker)
+  - MeiliSearch for search (Docker)
+  - Local Go backend development server
+  - Local Python FastAPI development server
+  - Nhost local development environment
+```
+
+#### Development Workflow
+
+```yaml
+Feature Development:
+  1. Create feature branch from develop
+  2. Set up local development environment
+  3. Implement feature with tests
+  4. Run local quality checks
+  5. Create pull request to develop
+  6. Code review and CI validation
+  7. Merge to develop for staging deployment
+  8. Integration testing on staging
+  9. Merge to main for production deployment
+
+Code Review Process:
+  - Automated quality checks must pass
+  - At least one human reviewer approval
+  - Security review for sensitive changes
+  - Performance impact assessment
+  - Documentation updates when needed
+```
+
+### Monitoring & Observability
+
+#### Application Monitoring
+
+```yaml
+Metrics Collection:
+  - Prometheus for system and application metrics
+  - Custom metrics for business logic
+  - Performance monitoring (response times, throughput)
+  - Error tracking and alerting
+  - Resource utilization monitoring
+
+Log Management:
+  - Structured logging (JSON format)
+  - Centralized log aggregation (Loki)
+  - Log retention policies
+  - Error alerting based on log patterns
+  - Performance analytics from logs
+
+Distributed Tracing:
+  - Request tracing across services
+  - Performance bottleneck identification
+  - Error propagation tracking
+  - Service dependency mapping
+```
+
+#### Dashboard & Alerting
+
+```yaml
+Grafana Dashboards:
+  - System health overview
+  - Application performance metrics
+  - Business metrics and KPIs
+  - Security event monitoring
+  - Infrastructure resource usage
+
+Alerting Rules:
+  - High error rates (>5% for 5 minutes)
+  - Slow response times (>2s average)
+  - Service down/unreachable
+  - High resource utilization (>80%)
+  - Security incidents
+  - Failed deployments
+
+Notification Channels:
+  - Slack for team notifications
+  - Email for critical alerts
+  - PagerDuty for production incidents
+  - SMS for emergency situations
+```
+
+**Modern Security**
+
+## 📈 Success Metrics
+
+**Performance**
+- Page load times: <2 seconds
+- API response times: <200ms
+- Search results: <50ms
+- Uptime: 99.9%
+
+**Security**
+- Zero successful breaches
+- <1% false positive rate
+- Automated threat blocking
+- Regular security audits
+
+**Development**
+- Feature delivery time: 50% faster
+- Bug resolution: <24 hours
+- Code coverage: >80%
+- Automated testing: 100%
 
 ---
 
-## 🚀 **Implementation Priority (Updated)**
-
-### **Phase 1: Nhost Backend Setup (2-3 weeks)**
-```yaml
-✅ Deploy Nhost stack (Hasura + Auth + Storage)
-✅ Configure PostgreSQL schema and permissions
-✅ Set up authentication providers and user management
-✅ Test file storage and CDN integration
-✅ Create initial GraphQL queries and mutations
-```
-
-### **Phase 2: Frontend Integration (2-3 weeks)**
-```yaml
-🔲 Integrate @nhost/react for authentication
-🔲 Set up Apollo Client with Nhost GraphQL endpoint
-🔲 Create file upload components with Hasura Storage
-🔲 Implement real-time features with GraphQL subscriptions
-🔲 Test authentication flows and user management
-```
-
-### **Phase 3: Go Backend Integration (2-3 weeks)**
-```yaml
-🔲 Configure Go services to validate Nhost JWT tokens
-🔲 Implement GraphQL mutations for writing processed data
-🔲 Set up Redis caching for performance-critical data
-🔲 Create background job processing with Go
-🔲 Test end-to-end data flow between services
-```
-
-### **Phase 4: Application Development (4-6 weeks)**
-```yaml
-🔲 Build portfolio showcase with Astro + React islands
-🔲 Create AI pricing dashboard with real-time updates
-🔲 Develop first browser game with multiplayer features
-🔲 Implement blog platform with MDX and comment system
-🔲 Add analytics and user engagement tracking
-```
-
----
-
-**Architecture Benefits Summary:**
-- ✅ **Simplified**: Reduced from 8+ services to 5 core services
-- ✅ **Unified**: Single backend configuration and management
-- ✅ **Modern**: GraphQL-first with real-time capabilities
-- ✅ **Scalable**: Built-in optimization and caching
-- ✅ **Self-hosted**: Complete control with BaaS convenience
-- ✅ **Developer-friendly**: Auto-generated types and built-in features
-
-**Last Updated**: May 26, 2025  
-**Version**: 2.0 (Nhost-Optimized)  
-**Status**: Architecture Redesigned, Ready for Implementation
+**Last Updated**: June 18, 2025  
+**Version**: 2.0 (Production-Ready)  
+**Status**: Implementation Ready
